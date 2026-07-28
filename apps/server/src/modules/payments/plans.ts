@@ -3,7 +3,7 @@ export const SUBSCRIPTION_PLANS = {
   free: {
     plan: 'free' as const,
     amountPaise: 0,
-    listingLimit: 3,
+    listingLimit: 5,
     analytics: false,
     label: 'Free',
   },

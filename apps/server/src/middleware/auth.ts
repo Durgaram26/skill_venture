@@ -62,6 +62,40 @@ export async function authenticate(
   }
 }
 
+/**
+ * Populates req.user when a valid access token is present, but never rejects.
+ * Used for endpoints open to guests (e.g. enquiries) that still want to
+ * associate the record with a logged-in student when one exists.
+ */
+export async function authenticateOptional(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const header = req.headers.authorization;
+  if (!header?.startsWith('Bearer ')) {
+    next();
+    return;
+  }
+  try {
+    const token = header.slice('Bearer '.length);
+    const payload = jwt.verify(token, env.JWT_ACCESS_SECRET) as AccessTokenPayload;
+    if (payload.type === 'access') {
+      const user = await User.findById(payload.sub).select('role email isBanned').lean();
+      if (user && !user.isBanned) {
+        (req as AuthenticatedRequest).user = {
+          id: String(user._id),
+          role: user.role,
+          email: user.email,
+        };
+      }
+    }
+  } catch {
+    // Invalid/expired token → treat as guest, don't block the request.
+  }
+  next();
+}
+
 export function authorize(...roles: UserRole[]) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     const authReq = req as AuthenticatedRequest;

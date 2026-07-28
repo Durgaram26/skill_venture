@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import type { ReactNode, SVGProps } from 'react';
 import { MarketplaceShell } from '../../components/AppShell';
 import { useAuthStore } from '../../features/auth/authStore';
@@ -30,8 +30,18 @@ function IconBilling(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+function IconInbox(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...props}>
+      <path d="M4 5h16v14H4z" strokeLinejoin="round" />
+      <path d="M4 15h4l1.5 2h5L16 15h4" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 const NAV = [
   { to: '/institution', end: true, label: 'Hub', Icon: IconHub },
+  { to: '/institution?tab=enquiries', end: true, label: 'Enquiries', Icon: IconInbox },
   { to: '/institution/analytics', end: false, label: 'Analytics', Icon: IconChart },
   { to: '/institution/billing', end: false, label: 'Billing', Icon: IconBilling },
 ] as const;
@@ -62,13 +72,16 @@ export function InstitutionShell({
   children,
   error,
   actions,
+  enquiryCount = 0,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
   error?: string | null;
   actions?: ReactNode;
+  enquiryCount?: number;
 }) {
+  const location = useLocation();
   return (
     <InstitutionGate>
       <MarketplaceShell>
@@ -85,16 +98,35 @@ export function InstitutionShell({
 
         <nav aria-label="Institution sections" className="sv-admin-tabs mb-6">
           {NAV.map(({ to, end, label, Icon }) => (
-            <NavLink key={to} to={to} end={end} className={({ isActive }) => (isActive ? 'is-active' : undefined)}>
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) => {
+                const enquiriesActive = to.includes('tab=enquiries') && location.search.includes('tab=enquiries');
+                const hubActive = to === '/institution' && location.pathname === '/institution' && !location.search;
+                const active = to.includes('tab=enquiries')
+                  ? enquiriesActive
+                  : to === '/institution'
+                    ? hubActive
+                    : isActive;
+                return active ? 'is-active' : undefined;
+              }}
+            >
               <Icon />
               {label}
+              {label === 'Enquiries' && enquiryCount > 0 ? (
+                <span className="sv-tab-count" aria-label={`${enquiryCount} enquiries`}>
+                  {enquiryCount}
+                </span>
+              ) : null}
             </NavLink>
           ))}
         </nav>
 
         {error ? (
           <p
-            className="mb-5 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#9a4f1f]"
+            className="mb-5 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#b45309]"
             role="alert"
           >
             {error}

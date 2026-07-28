@@ -146,7 +146,7 @@ export function ProfileSettingsPage() {
               ) : null}
 
               {error ? (
-                <p className="rounded-lg bg-spark-soft px-3 py-2 text-sm font-semibold text-[#9a4f1f]" role="alert">
+                <p className="rounded-lg bg-spark-soft px-3 py-2 text-sm font-semibold text-[#b45309]" role="alert">
                   {error}
                 </p>
               ) : null}

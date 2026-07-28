@@ -138,7 +138,8 @@ export interface InstitutionSummary {
 
 export interface EnquirySummary {
   id: string;
-  studentId: string;
+  /** null for guest enquiries submitted without a student login */
+  studentId: string | null;
   listingId: string;
   institutionId: string;
   message: string;

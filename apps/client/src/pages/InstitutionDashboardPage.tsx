@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import type { EnquirySummary, ListingSummary } from '@skillventures/shared-types';
 import { api, ApiError } from '../lib/api';
 import { useAuthStore } from '../features/auth/authStore';
@@ -14,9 +14,9 @@ type ListingFilter = 'all' | 'published' | 'pending_review' | 'draft';
 type EnquiryFilter = 'all' | 'new' | 'contacted' | 'converted' | 'lost';
 
 const TYPE_TINT: Record<string, string> = {
-  course: 'from-[#0D7A6F] to-[#2BB5A5]',
-  bootcamp: 'from-[#102A28] to-[#0D7A6F]',
-  hackathon: 'from-[#06141F] to-[#D9773A]',
+  course: 'from-[#7c3aed] to-[#a78bfa]',
+  bootcamp: 'from-[#111827] to-[#7c3aed]',
+  hackathon: 'from-[#1e1b2e] to-[#f59e0b]',
 };
 
 function formatFee(listing: ListingSummary) {
@@ -148,6 +148,8 @@ export function InstitutionDashboardPage() {
   const [listingFilter, setListingFilter] = useState<ListingFilter>('all');
   const [enquiryFilter, setEnquiryFilter] = useState<EnquiryFilter>('all');
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const isEnquiriesTab = searchParams.get('tab') === 'enquiries';
 
   useEffect(() => {
     if (user?.role !== 'institution') return;
@@ -195,14 +197,15 @@ export function InstitutionDashboardPage() {
 
   return (
     <InstitutionShell
-      title="Instructor hub"
-      subtitle="Publish programs, manage leads, and keep every enquiry moving."
+      title={isEnquiriesTab ? 'Enquiry inbox' : 'Instructor hub'}
+      subtitle={isEnquiriesTab ? 'Review and respond to student enquiries.' : 'Publish programs, manage leads, and keep every enquiry moving.'}
       error={error}
-      actions={
+      enquiryCount={stats.totalEnquiries}
+      actions={!isEnquiriesTab ? (
         <Link to="/institution/listings/new" className="sv-btn-accent">
           + Create listing
         </Link>
-      }
+      ) : undefined}
     >
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -229,7 +232,7 @@ export function InstitutionDashboardPage() {
         </div>
       ) : null}
 
-      <section className="mt-8">
+      {!isEnquiriesTab ? <section className="mt-8">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="font-display text-xl font-bold tracking-tight">My listings</h2>
@@ -278,14 +281,10 @@ export function InstitutionDashboardPage() {
             ))}
           </div>
         )}
-      </section>
+      </section> : null}
 
-      <section className="mt-10">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="font-display text-xl font-bold tracking-tight">Enquiry inbox</h2>
-            <p className="text-sm text-mute">Reply fast — students compare multiple programs.</p>
-          </div>
+      {isEnquiriesTab ? <section className="mt-8">
+        <div className="mb-4 flex flex-wrap items-end justify-end gap-3">
           <FilterPills
             value={enquiryFilter}
             onChange={setEnquiryFilter}
@@ -369,7 +368,7 @@ export function InstitutionDashboardPage() {
             ))}
           </ul>
         )}
-      </section>
+      </section> : null}
     </InstitutionShell>
   );
 }

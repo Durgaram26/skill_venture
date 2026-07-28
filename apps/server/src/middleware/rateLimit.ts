@@ -27,6 +27,8 @@ export const authRateLimiter = rateLimit({
   max: env.NODE_ENV === 'test' ? 1000 : 20,
   standardHeaders: true,
   legacyHeaders: false,
+  // Successful refreshes/logins should not consume the failed-attempt budget.
+  skipSuccessfulRequests: true,
   message: {
     success: false,
     error: {

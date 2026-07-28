@@ -53,7 +53,7 @@ export function BookmarksPage() {
             <div className="flex gap-2">
               <button
                 type="button"
-                className="rounded-md border border-ink/15 px-3 py-1 text-xs font-semibold"
+                className="compare-feature rounded-md border border-ink/15 px-3 py-1 text-xs font-semibold"
                 onClick={() => toggleCompare(b.listingId)}
               >
                 {hasCompare(b.listingId) ? 'In compare' : 'Compare'}

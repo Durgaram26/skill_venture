@@ -105,7 +105,8 @@ export async function search(req: Request, res: Response, next: NextFunction): P
 
 export async function getBySlug(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const result = await listingsService.getListingBySlug(req.params.slug as string);
+    const viewer = (req as Request & { user?: AuthenticatedRequest['user'] }).user;
+    const result = await listingsService.getListingBySlug(req.params.slug as string, viewer);
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     next(error);

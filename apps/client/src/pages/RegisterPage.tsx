@@ -73,14 +73,14 @@ export function RegisterPage() {
       footer={
         <>
           Already have an account?{' '}
-          <Link className="font-semibold text-[#0d7a6f] hover:underline" to="/login">
+          <Link className="font-semibold text-[#7c3aed] hover:underline" to="/login">
             Sign in
           </Link>
         </>
       }
     >
       <div
-        className="sv-auth-tabs mb-5 grid grid-cols-2 gap-1 rounded-xl border border-[#d5e0dc] bg-[#eef3f1] p-1"
+        className="sv-auth-tabs mb-5 grid grid-cols-2 gap-1 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-1"
         role="tablist"
         aria-label="Account type"
       >
@@ -90,8 +90,8 @@ export function RegisterPage() {
           aria-selected={role === 'student'}
           className={`rounded-lg px-3 py-2.5 text-sm font-bold transition ${
             role === 'student'
-              ? 'bg-white text-[#102a28] shadow-sm'
-              : 'text-[#5a736c] hover:text-[#102a28]'
+              ? 'bg-white text-[#111827] shadow-sm'
+              : 'text-[#4b5563] hover:text-[#111827]'
           }`}
           onClick={() => setRole('student')}
         >
@@ -103,8 +103,8 @@ export function RegisterPage() {
           aria-selected={role === 'institution'}
           className={`rounded-lg px-3 py-2.5 text-sm font-bold transition ${
             role === 'institution'
-              ? 'bg-white text-[#102a28] shadow-sm'
-              : 'text-[#5a736c] hover:text-[#102a28]'
+              ? 'bg-white text-[#111827] shadow-sm'
+              : 'text-[#4b5563] hover:text-[#111827]'
           }`}
           onClick={() => setRole('institution')}
         >
@@ -114,7 +114,7 @@ export function RegisterPage() {
 
       <form
         onSubmit={onSubmit}
-        className="sv-auth-card space-y-4 rounded-2xl border border-[#d5e0dc] bg-white p-5 shadow-card sm:p-6"
+        className="sv-auth-card space-y-4 rounded-2xl border border-[#e5e7eb] bg-white p-5 shadow-card sm:p-6"
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field name="name" label="Your name" required autoComplete="name" />
@@ -137,7 +137,7 @@ export function RegisterPage() {
         ) : (
           <>
             <Field name="institutionName" label="Institution name" required />
-            <label className="block text-sm font-semibold text-[#102a28]">
+            <label className="block text-sm font-semibold text-[#111827]">
               Institution type
               <select
                 name="institutionType"
@@ -160,7 +160,7 @@ export function RegisterPage() {
         )}
 
         {error ? (
-          <p className="rounded-lg bg-[#f8e6d8] px-3 py-2 text-sm font-semibold text-[#9a4f1f]" role="alert">
+          <p className="rounded-lg bg-[#fef3c7] px-3 py-2 text-sm font-semibold text-[#b45309]" role="alert">
             {error}
           </p>
         ) : null}
@@ -189,7 +189,7 @@ function Field({
   hint?: string;
 }) {
   return (
-    <label className="block text-sm font-semibold text-[#102a28]">
+    <label className="block text-sm font-semibold text-[#111827]">
       {label}
       <input
         name={name}
@@ -199,7 +199,7 @@ function Field({
         placeholder=" "
         className="sv-input mt-1.5"
       />
-      {hint ? <span className="mt-1 block text-xs font-normal text-[#5a736c]">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-xs font-normal text-[#4b5563]">{hint}</span> : null}
     </label>
   );
 }

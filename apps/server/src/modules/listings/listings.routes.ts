@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate, authorize } from '../../middleware/auth.js';
+import { authenticate, authenticateOptional, authorize } from '../../middleware/auth.js';
 import { validateBody, validateParams, validateQuery } from '../../middleware/validate.js';
 import { cachePublicListings } from '../../middleware/cache.js';
 import * as controller from './listings.controller.js';
@@ -23,7 +23,7 @@ router.get('/', validateQuery(listingListQuerySchema), cachePublicListings(45), 
 router.get('/suggest', validateQuery(suggestQuerySchema), cachePublicListings(15), controller.suggest);
 router.get('/search', validateQuery(searchQuerySchema), cachePublicListings(30), controller.search);
 router.get('/compare', validateQuery(compareQuerySchema), controller.compare);
-router.get('/:slug', validateParams(listingSlugParamsSchema), controller.getBySlug);
+router.get('/:slug', authenticateOptional, validateParams(listingSlugParamsSchema), controller.getBySlug);
 
 export const institutionListingsRouter = Router();
 

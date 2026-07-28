@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import { authenticate, authorize } from '../../middleware/auth.js';
+import { authenticate, authenticateOptional, authorize } from '../../middleware/auth.js';
 import { validateBody, validateParams, validateQuery } from '../../middleware/validate.js';
-import { authRateLimiter } from '../../middleware/rateLimit.js';
 import * as controller from './enquiries.controller.js';
 import {
   createEnquirySchema,
@@ -12,11 +11,10 @@ import {
 
 export const enquiriesRouter = Router();
 
+// Open to guests — students are linked automatically when logged in.
 enquiriesRouter.post(
   '/',
-  authenticate,
-  authorize('student'),
-  authRateLimiter,
+  authenticateOptional,
   validateBody(createEnquirySchema),
   controller.create,
 );

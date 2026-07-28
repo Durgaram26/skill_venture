@@ -1,5 +1,8 @@
+import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ScrollToTop } from './components/ScrollToTop';
+import { api } from './lib/api';
+import { useAuthStore } from './features/auth/authStore';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -28,9 +31,40 @@ import { InstitutionAnalyticsPage } from './pages/InstitutionAnalyticsPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage';
 import { StudentPaymentsPage } from './pages/StudentPaymentsPage';
 
+let authBootstrap: Promise<void> | null = null;
+
+function bootstrapAuth(): Promise<void> {
+  if (authBootstrap) return authBootstrap;
+
+  authBootstrap = api
+    .refresh()
+    .then((data) => {
+      useAuthStore.getState().setSession(data.user, data.accessToken);
+    })
+    .catch(() => {
+      useAuthStore.getState().setInitialized();
+    });
+
+  return authBootstrap;
+}
+
+function AuthBootstrap({ children }: { children: React.ReactNode }) {
+  const initialized = useAuthStore((state) => state.initialized);
+
+  useEffect(() => {
+    void bootstrapAuth();
+  }, []);
+
+  if (!initialized) {
+    return <div className="min-h-screen bg-chalk" aria-busy="true" />;
+  }
+
+  return <>{children}</>;
+}
+
 export function App() {
   return (
-    <>
+    <AuthBootstrap>
       <ScrollToTop />
       <Routes>
       <Route path="/" element={<HomePage />} />
@@ -61,7 +95,7 @@ export function App() {
       <Route path="/admin/admins" element={<AdminAdminsPage />} />
       <Route path="/admin/settings" element={<AdminSettingsPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-    </>
+      </Routes>
+    </AuthBootstrap>
   );
 }

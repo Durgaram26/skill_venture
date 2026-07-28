@@ -1,26 +1,9 @@
 import { useEffect, useState, type ReactNode, type SVGProps } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../features/auth/authStore';
 import { UserProfileMenu } from './UserProfileMenu';
 import { SearchAutocomplete } from './SearchAutocomplete';
-
-function IconCompass(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M14.5 9.5l-2 5-5 2 2-5 5-2z" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function IconCompare(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...props}>
-      <path d="M7 4v16M17 4v16" strokeLinecap="round" />
-      <path d="M4 8h6M14 16h6" strokeLinecap="round" />
-    </svg>
-  );
-}
+import logoOnly from '../assets/illustrations/logo_only.png';
 
 function IconBook(props: SVGProps<SVGSVGElement>) {
   return (
@@ -35,15 +18,6 @@ function IconBookmark(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...props}>
       <path d="M7 4h10v16l-5-3-5 3V4z" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function IconBuilding(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...props}>
-      <path d="M4 20V8l8-4 8 4v12" strokeLinejoin="round" />
-      <path d="M9 20v-6h6v6M9 10h.01M12 10h.01M15 10h.01M9 14h.01M15 14h.01" strokeLinecap="round" />
     </svg>
   );
 }
@@ -74,13 +48,20 @@ export function MarketplaceShell({
   title,
   subtitle,
   bare,
+  hideSearch = false,
+  fullWidth = false,
+  hideFooter = false,
 }: {
   children: ReactNode;
   title?: string;
   subtitle?: string;
   bare?: boolean;
+  hideSearch?: boolean;
+  fullWidth?: boolean;
+  hideFooter?: boolean;
 }) {
   const user = useAuthStore((s) => s.user);
+  const location = useLocation();
   const navigate = useNavigate();
   const [q, setQ] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -129,10 +110,11 @@ export function MarketplaceShell({
 
   const dark = headerSurface === 'dark';
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const listingType = new URLSearchParams(location.search).get('type');
 
   const mobileLinks: { to: string; label: string; end?: boolean }[] = [
     { to: '/listings', label: 'Explore' },
-    { to: '/compare', label: 'Compare' },
+    // Compare is intentionally hidden for now; the route remains available for later.
   ];
   if (user?.role === 'student') {
     mobileLinks.push(
@@ -151,11 +133,11 @@ export function MarketplaceShell({
     mobileLinks.push({ to: '/admin', label: 'Admin panel' });
   }
   if (!user) {
-    mobileLinks.push({ to: '/login', label: 'Log in' }, { to: '/register', label: 'Join free' });
+    mobileLinks.push({ to: '/login', label: 'Login' });
   }
 
   return (
-    <div className="min-h-screen bg-chalk text-ink" data-header-surface={headerSurface}>
+    <div className="sv-app-shell min-h-screen bg-chalk text-ink" data-header-surface={headerSurface}>
       <header
         data-site-header
         data-header-surface={headerSurface}
@@ -168,14 +150,13 @@ export function MarketplaceShell({
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 md:gap-4 md:px-6 md:py-3">
           <Link
             to="/"
-            className={`shrink-0 font-display text-xl font-extrabold tracking-tight md:text-2xl ${
-              dark ? 'text-white' : 'text-ink'
-            }`}
+            className="flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight text-teal md:text-2xl"
           >
-            Skill<span className={dark ? 'text-teal-bright' : 'text-teal'}>Ventures</span>
+            <img src={logoOnly} alt="" className="sv-brand-mark" />
+            <span>SkillVentures</span>
           </Link>
 
-          {!bare ? (
+          {!bare && !hideSearch ? (
             <SearchAutocomplete
               value={q}
               onChange={setQ}
@@ -188,14 +169,37 @@ export function MarketplaceShell({
           )}
 
           <nav className="sv-nav-rail ml-auto hidden lg:inline-flex" aria-label="Primary">
-            <NavLink to="/listings" className={navClass}>
-              <IconCompass />
-              Explore
+            <NavLink to="/" end className={location.pathname === '/' ? 'is-active' : undefined}>
+              <i className="fas fa-home" aria-hidden />
+              Home
             </NavLink>
-            <NavLink to="/compare" className={navClass}>
-              <IconCompare />
-              Compare
+            <NavLink
+              to="/listings?type=course"
+              className={location.pathname === '/listings' && listingType === 'course' ? 'is-active' : undefined}
+            >
+              <i className="fas fa-book-open" aria-hidden />
+              Courses
             </NavLink>
+            <NavLink
+              to="/listings?type=bootcamp"
+              className={location.pathname === '/listings' && listingType === 'bootcamp' ? 'is-active' : undefined}
+            >
+              <i className="fas fa-fire" aria-hidden />
+              Bootcamps
+            </NavLink>
+            <NavLink
+              to="/listings?type=hackathon"
+              className={location.pathname === '/listings' && listingType === 'hackathon' ? 'is-active' : undefined}
+            >
+              <i className="fas fa-trophy" aria-hidden />
+              Hackathons
+            </NavLink>
+            {user?.role === 'institution' ? (
+              <NavLink to="/institution" className={navClass}>
+                <i className="fas fa-layer-group" aria-hidden />
+                Hub
+              </NavLink>
+            ) : null}
             {user?.role === 'student' ? (
               <>
                 <NavLink to="/student/enquiries" className={navClass}>
@@ -208,17 +212,6 @@ export function MarketplaceShell({
                 <NavLink to="/student/bookmarks" className={navClass}>
                   <IconBookmark />
                   Saved
-                </NavLink>
-              </>
-            ) : null}
-            {user?.role === 'institution' ? (
-              <>
-                <NavLink to="/institution" end className={navClass}>
-                  <IconBuilding />
-                  Hub
-                </NavLink>
-                <NavLink to="/institution/billing" className={navClass}>
-                  Billing
                 </NavLink>
               </>
             ) : null}
@@ -242,10 +235,7 @@ export function MarketplaceShell({
                       : 'sv-btn-ghost'
                   }`}
                 >
-                  Log in
-                </Link>
-                <Link to="/register" className="sv-btn-accent">
-                  Join free
+                      Login
                 </Link>
               </>
             ) : null}
@@ -277,14 +267,16 @@ export function MarketplaceShell({
               onNavigate={() => setMenuOpen(false)}
             />
           ) : null}
-          <SearchAutocomplete
-            value={q}
-            onChange={setQ}
-            onSubmit={onSearch}
-            dark={dark}
-            className="mb-4 max-w-none"
-            placeholder="Search programs…"
-          />
+          {!hideSearch ? (
+            <SearchAutocomplete
+              value={q}
+              onChange={setQ}
+              onSubmit={onSearch}
+              dark={dark}
+              className="mb-4 max-w-none"
+              placeholder="Search programs…"
+            />
+          ) : null}
           <div className="sv-mobile-nav-list">
             {mobileLinks.map((item) => (
               <NavLink
@@ -302,7 +294,7 @@ export function MarketplaceShell({
         </div>
       </header>
 
-      <main className={bare ? '' : 'mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10'}>
+      <main className={bare || fullWidth ? '' : 'mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10'}>
         {title ? (
           <div className="mb-8 animate-rise">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-mute">SkillVentures</p>
@@ -315,35 +307,58 @@ export function MarketplaceShell({
         {children}
       </main>
 
-      {!bare ? (
-        <footer className="sv-site-footer mt-auto">
-          <div className="mx-auto grid max-w-7xl gap-8 px-4 md:grid-cols-3 md:px-6">
-            <div>
-              <p className="font-display text-xl font-bold text-[#f1f5f4]">
-                Skill<span className="sv-footer-brand-accent">Ventures</span>
-              </p>
-              <p className="sv-footer-muted mt-2 text-sm">
-                The discovery layer for India&apos;s courses, bootcamps, and hackathons.
-              </p>
-            </div>
-            <div>
-              <p className="mb-3 text-sm font-semibold text-[#f1f5f4]">Quick links</p>
-              <div className="sv-capsule-nav">
-                <Link to="/listings">Explore</Link>
-                <Link to="/compare">Compare</Link>
-                <Link to="/register?role=institution">Partner</Link>
+      {!bare && !hideFooter ? (
+        <footer className="mt-auto bg-gray-900 py-12 text-white">
+          <div className="mx-auto max-w-7xl px-4 md:px-6">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              <div>
+                <div className="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+                  SkillVentures
+                </div>
+                <p className="text-gray-400">
+                  The discovery layer for India&apos;s courses, bootcamps, and hackathons.
+                </p>
+              </div>
+              <div>
+                <h4 className="mb-4 text-lg font-semibold">Quick Links</h4>
+                <ul className="space-y-2 text-gray-400">
+                  <li>
+                    <Link to="/listings" className="hover:text-white">
+                      Explore
+                    </Link>
+                  </li>
+                  {/* Compare navigation is temporarily hidden; restore when the feature is ready. */}
+                  <li>
+                    <Link to="/register?role=institution" className="hover:text-white">
+                      Become a partner
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/institution/billing" className="hover:text-white">
+                      Plans &amp; billing
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="mb-4 text-lg font-semibold">Contact</h4>
+                <ul className="space-y-2 text-gray-400">
+                  <li>
+                    <i className="fas fa-envelope mr-2" aria-hidden /> hello@skillventures.com
+                  </li>
+                  <li>
+                    <i className="fas fa-phone mr-2" aria-hidden /> +91 98765 43210
+                  </li>
+                  <li>
+                    <i className="fas fa-map-marker-alt mr-2" aria-hidden /> Bengaluru, India
+                  </li>
+                </ul>
               </div>
             </div>
-            <div className="text-sm">
-              <p className="font-semibold text-[#f1f5f4]">For institutions</p>
-              <Link className="mt-2 block" to="/institution/billing">
-                Plans & billing
-              </Link>
+            <div className="mt-8 border-t border-gray-800 pt-8 text-center text-gray-400">
+              <p>© {new Date().getFullYear()} SkillVentures. All rights reserved. | Prices in Indian Rupees (₹)</p>
             </div>
           </div>
-          <p className="sv-footer-muted mx-auto mt-8 max-w-7xl px-4 text-xs md:px-6">
-            © {new Date().getFullYear()} SkillVentures
-          </p>
         </footer>
       ) : null}
     </div>

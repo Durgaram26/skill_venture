@@ -149,7 +149,11 @@ export const api = {
     });
   },
 
-  createEnquiry(payload: { listingId: string; message: string }) {
+  createEnquiry(payload: {
+    listingId: string;
+    message: string;
+    contactInfo?: { name: string; phone: string; email: string };
+  }) {
     return request<{ enquiry: EnquirySummary }>('/api/v1/enquiries', {
       method: 'POST',
       body: JSON.stringify(payload),

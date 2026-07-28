@@ -40,7 +40,7 @@ export function StudentPaymentsPage() {
       subtitle="Enrollment fees you paid — institutions receive the net amount after platform fee."
     >
       {error ? (
-        <p className="mb-4 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#9a4f1f]">
+        <p className="mb-4 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#b45309]">
           {error}
         </p>
       ) : null}

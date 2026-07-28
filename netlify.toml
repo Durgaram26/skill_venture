@@ -1,0 +1,15 @@
+[build]
+  base = "apps/client"
+  command = "cd ../.. && npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/client"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Set VITE_API_URL in Netlify's environment variables to the deployed API URL.
+# Keep MONGODB_URI server-side only; never expose the Atlas connection string here.

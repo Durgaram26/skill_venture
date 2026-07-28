@@ -8,7 +8,7 @@ import { AdminShell, EmptyQueue, FilterTabs } from './AdminShell';
 type StatusFilter = 'pending_review' | 'published' | 'rejected' | 'paused' | 'draft' | 'all';
 
 const FILTERS: { value: StatusFilter; label: string }[] = [
-  { value: 'pending_review', label: 'In review' },
+  { value: 'pending_review', label: 'Submitted / in review' },
   { value: 'published', label: 'Published' },
   { value: 'rejected', label: 'Rejected' },
   { value: 'paused', label: 'Paused' },
@@ -18,7 +18,7 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
 
 export function AdminListingsPage() {
   const user = useAuthStore((s) => s.user);
-  const [status, setStatus] = useState<StatusFilter>('pending_review');
+  const [status, setStatus] = useState<StatusFilter>('all');
   const [items, setItems] = useState<ListingSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

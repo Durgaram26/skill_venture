@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { LazyImage } from './LazyImage';
 
 const TYPE_TINT: Record<string, string> = {
-  course: 'from-[#0D7A6F] to-[#2BB5A5]',
-  bootcamp: 'from-[#102A28] to-[#0D7A6F]',
-  hackathon: 'from-[#06141F] to-[#D9773A]',
+  course: 'from-[#7c3aed] to-[#a78bfa]',
+  bootcamp: 'from-[#111827] to-[#7c3aed]',
+  hackathon: 'from-[#1e1b2e] to-[#f59e0b]',
 };
 
 function Stars({ avg }: { avg: number }) {
@@ -104,7 +104,7 @@ export function ListingCard({
               type="button"
               onClick={onCompare}
               aria-pressed={comparing}
-              className={`sv-btn-ghost text-xs ${
+              className={`compare-feature sv-btn-ghost text-xs ${
                 comparing ? 'border-teal bg-teal-soft text-teal' : ''
               }`}
             >

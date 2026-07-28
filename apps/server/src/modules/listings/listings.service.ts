@@ -287,13 +287,28 @@ export async function searchListings(q: string, pageNum?: number, limitNum?: num
   return listPublicListings({ q, page: pageNum, limit: limitNum });
 }
 
-export async function getListingBySlug(slug: string) {
-  const listing = await Listing.findOneAndUpdate(
-    { slug, status: 'published' },
-    { $inc: { 'stats.views': 1 } },
-    { new: true },
-  );
+export async function getListingBySlug(
+  slug: string,
+  viewer?: { id: string; role: 'student' | 'institution' | 'admin' | 'super_admin' },
+) {
+  const publicListing = viewer?.role === 'institution' || viewer?.role === 'admin' || viewer?.role === 'super_admin'
+    ? await Listing.findOne({ slug })
+    : await Listing.findOneAndUpdate(
+        { slug, status: 'published' },
+        { $inc: { 'stats.views': 1 } },
+        { new: true },
+      );
+  const listing = publicListing;
   if (!listing) {
+    throw new AppError('Listing not found', 404, 'LISTING_NOT_FOUND');
+  }
+
+  const canPreview =
+    listing.status === 'published' ||
+    viewer?.role === 'admin' ||
+    viewer?.role === 'super_admin' ||
+    (viewer?.role === 'institution' && String(listing.institutionId) === viewer.id);
+  if (!canPreview) {
     throw new AppError('Listing not found', 404, 'LISTING_NOT_FOUND');
   }
 

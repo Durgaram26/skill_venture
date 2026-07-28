@@ -6,9 +6,9 @@ import type { CreateEnquiryInput, EnquiryListQuery } from './enquiries.validatio
 
 export async function create(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const authReq = req as AuthenticatedRequest;
+    const authReq = req as Request & { user?: AuthenticatedRequest['user'] };
     const enquiry = await enquiriesService.createEnquiry(
-      authReq.user.id,
+      authReq.user?.id ?? null,
       req.body as CreateEnquiryInput,
     );
     res.status(201).json({ success: true, data: { enquiry } });

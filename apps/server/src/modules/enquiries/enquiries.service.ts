@@ -15,7 +15,7 @@ function toEnquirySummary(
 ): EnquirySummary {
   return {
     id: String(doc._id),
-    studentId: String(doc.studentId),
+    studentId: doc.studentId ? String(doc.studentId) : null,
     listingId: String(doc.listingId),
     institutionId: String(doc.institutionId),
     message: doc.message,
@@ -40,22 +40,64 @@ function toEnquirySummary(
   };
 }
 
-export async function createEnquiry(studentId: string, input: CreateEnquiryInput) {
+export async function createEnquiry(studentId: string | null, input: CreateEnquiryInput) {
   const listing = await Listing.findById(input.listingId);
   if (!listing || listing.status !== 'published') {
     throw new AppError('Listing not available for enquiry', 404, 'LISTING_NOT_FOUND');
   }
 
-  const student = await User.findById(studentId);
-  if (!student || student.role !== 'student') {
-    throw new AppError('Only students can create enquiries', 403, 'FORBIDDEN');
-  }
+  let contactInfo: { name: string; phone: string; email: string };
 
-  const contactInfo = input.contactInfo ?? {
-    name: student.name,
-    phone: student.phone ?? '',
-    email: student.email,
-  };
+  if (studentId) {
+    const student = await User.findById(studentId);
+    if (!student || student.role !== 'student') {
+      throw new AppError('Only students can create enquiries', 403, 'FORBIDDEN');
+    }
+    contactInfo = input.contactInfo ?? {
+      name: student.name,
+      phone: student.phone ?? '',
+      email: student.email,
+    };
+
+    // One open enquiry per student per listing.
+    const existing = await Enquiry.findOne({
+      studentId,
+      listingId: listing._id,
+      status: { $in: ['new', 'contacted'] },
+    });
+    if (existing) {
+      throw new AppError(
+        'You already have an open enquiry for this listing',
+        409,
+        'ENQUIRY_EXISTS',
+      );
+    }
+  } else {
+    // Guest enquiry — contact info is mandatory.
+    if (!input.contactInfo) {
+      throw new AppError(
+        'Name, email, and phone are required to enquire',
+        400,
+        'CONTACT_INFO_REQUIRED',
+      );
+    }
+    contactInfo = input.contactInfo;
+
+    // One open guest enquiry per email per listing (basic dedupe).
+    const existing = await Enquiry.findOne({
+      studentId: null,
+      listingId: listing._id,
+      'contactInfo.email': contactInfo.email,
+      status: { $in: ['new', 'contacted'] },
+    });
+    if (existing) {
+      throw new AppError(
+        'An enquiry from this email is already open for this listing',
+        409,
+        'ENQUIRY_EXISTS',
+      );
+    }
+  }
 
   if (!contactInfo.phone) {
     throw new AppError(
@@ -65,17 +107,8 @@ export async function createEnquiry(studentId: string, input: CreateEnquiryInput
     );
   }
 
-  const existing = await Enquiry.findOne({
-    studentId,
-    listingId: listing._id,
-    status: { $in: ['new', 'contacted'] },
-  });
-  if (existing) {
-    throw new AppError('You already have an open enquiry for this listing', 409, 'ENQUIRY_EXISTS');
-  }
-
   const enquiry = await Enquiry.create({
-    studentId,
+    studentId: studentId ?? null,
     listingId: listing._id,
     institutionId: listing.institutionId,
     message: input.message,

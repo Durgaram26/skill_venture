@@ -32,19 +32,19 @@ export function AuthLayout({
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                'linear-gradient(105deg, rgba(6,20,31,0.88) 0%, rgba(6,20,31,0.72) 38%, rgba(6,20,31,0.35) 68%, rgba(6,20,31,0.55) 100%)',
+                'linear-gradient(105deg, rgba(30, 27, 46,0.88) 0%, rgba(30, 27, 46,0.72) 38%, rgba(30, 27, 46,0.35) 68%, rgba(30, 27, 46,0.55) 100%)',
             }}
             aria-hidden
           />
 
           <div className="relative z-[1]">
             <Link to="/" className="font-display text-2xl font-extrabold tracking-tight drop-shadow-sm">
-              Skill<span className="text-[#2bb5a5]">Ventures</span>
+              Skill<span className="text-[#a78bfa]">Ventures</span>
             </Link>
           </div>
 
           <div className="relative z-[1] max-w-md py-8">
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#2bb5a5]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#a78bfa]">
               Skill discovery
             </p>
             <p className="mt-3 font-display text-4xl font-extrabold leading-[1.1] tracking-tight drop-shadow-sm xl:text-5xl">
@@ -53,7 +53,7 @@ export function AuthLayout({
             <p className="mt-4 text-base leading-relaxed text-[#f1f5f4]/90">
               Courses, bootcamps, and hackathons — verified listings, clear fees, tracked replies.
             </p>
-            <ul className="mt-8 space-y-3 border-l-2 border-[#2bb5a5]/60 pl-4 text-sm leading-relaxed text-[#f1f5f4]/85">
+            <ul className="mt-8 space-y-3 border-l-2 border-[#a78bfa]/60 pl-4 text-sm leading-relaxed text-[#f1f5f4]/85">
               <li>Browse freely — sign in only to enquire</li>
               <li>One profile fills every application</li>
               <li>Reviews from converted applicants only</li>
@@ -69,16 +69,16 @@ export function AuthLayout({
           <div className="mx-auto w-full max-w-md">
             <Link
               to="/"
-              className="mb-8 inline-block font-display text-xl font-extrabold tracking-tight text-[#102a28] lg:hidden"
+              className="mb-8 inline-block font-display text-xl font-extrabold tracking-tight text-[#111827] lg:hidden"
             >
-              Skill<span className="text-[#0d7a6f]">Ventures</span>
+              Skill<span className="text-[#7c3aed]">Ventures</span>
             </Link>
-            <h1 className="font-display text-3xl font-extrabold tracking-tight text-[#102a28]">
+            <h1 className="font-display text-3xl font-extrabold tracking-tight text-[#111827]">
               {title}
             </h1>
-            <p className="mt-2 text-sm leading-relaxed text-[#5a736c]">{subtitle}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[#4b5563]">{subtitle}</p>
             <div className="mt-7">{children}</div>
-            <div className="mt-5 text-sm text-[#5a736c]">{footer}</div>
+            <div className="mt-5 text-sm text-[#4b5563]">{footer}</div>
           </div>
         </main>
       </div>

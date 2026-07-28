@@ -356,34 +356,37 @@ export function InstitutionBillingPage() {
                 </Link>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                {(['standard', 'premium'] as const).map((plan) => {
+              <div className="grid gap-4 md:grid-cols-3">
+                {(['free', 'standard', 'premium'] as const).map((plan) => {
                   const meta = data.plans[plan];
                   const isCurrent = data.plan === plan;
+                  const isFree = plan === 'free';
                   return (
                     <article
                       key={plan}
                       className={isCurrent ? 'sv-inst-plan sv-inst-plan--current' : 'sv-inst-plan'}
                     >
                       <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-mute">
-                        {plan}
+                        {isFree ? 'Basic' : plan}
                       </p>
                       <p className="mt-1 font-display text-2xl font-extrabold">
-                        ₹{(meta.amountPaise / 100).toLocaleString('en-IN')}
-                        <span className="text-sm font-semibold text-mute"> / month</span>
+                        {isFree ? 'Free' : `₹${(meta.amountPaise / 100).toLocaleString('en-IN')}`}
+                        {!isFree ? <span className="text-sm font-semibold text-mute"> / month</span> : null}
                       </p>
                       <p className="mt-2 text-sm text-mute">
-                        Up to {meta.listingLimit} live listings · analytics included
+                        Up to {meta.listingLimit} live listings · {isFree ? 'no analytics' : 'analytics included'}
                       </p>
                       <button
                         type="button"
-                        disabled={loading || isCurrent}
-                        onClick={() => void buyPlan(plan)}
+                        disabled={loading || isCurrent || isFree}
+                        onClick={() => {
+                          if (!isFree) void buyPlan(plan);
+                        }}
                         className={
                           isCurrent ? 'sv-btn-ghost mt-4 w-full' : 'sv-btn-primary mt-4 w-full'
                         }
                       >
-                        {isCurrent ? 'Current plan' : `Upgrade to ${plan}`}
+                        {isCurrent ? 'Current plan' : isFree ? 'Free plan included' : `Upgrade to ${plan}`}
                       </button>
                     </article>
                   );

@@ -3,9 +3,9 @@ import type { ListingDraft } from '../features/listings/listingDraft';
 import { ListingCard } from './ListingCard';
 
 const TYPE_TINT: Record<string, string> = {
-  course: 'from-[#0D7A6F] to-[#2BB5A5]',
-  bootcamp: 'from-[#102A28] to-[#0D7A6F]',
-  hackathon: 'from-[#06141F] to-[#D9773A]',
+  course: 'from-[#7c3aed] to-[#a78bfa]',
+  bootcamp: 'from-[#111827] to-[#7c3aed]',
+  hackathon: 'from-[#1e1b2e] to-[#f59e0b]',
 };
 
 function toPreviewListing(draft: ListingDraft): ListingSummary {

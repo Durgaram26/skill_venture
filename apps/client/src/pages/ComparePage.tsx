@@ -7,9 +7,9 @@ import { api, ApiError } from '../lib/api';
 import { useCompareStore } from '../features/compare/compareStore';
 
 const TYPE_TINT: Record<string, string> = {
-  course: 'from-[#0D7A6F] to-[#2BB5A5]',
-  bootcamp: 'from-[#102A28] to-[#0D7A6F]',
-  hackathon: 'from-[#06141F] to-[#D9773A]',
+  course: 'from-[#7c3aed] to-[#a78bfa]',
+  bootcamp: 'from-[#111827] to-[#7c3aed]',
+  hackathon: 'from-[#1e1b2e] to-[#f59e0b]',
 };
 
 type RowDef = {
@@ -250,7 +250,7 @@ export function ComparePage() {
       </p>
 
       {error ? (
-        <p className="mb-4 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#9a4f1f]" role="alert">
+        <p className="mb-4 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#b45309]" role="alert">
           {error}
         </p>
       ) : null}

@@ -430,7 +430,7 @@ export function ListingsPage() {
               </p>
             </div>
             {compareCount > 0 ? (
-              <Link to="/compare" className="sv-btn-primary text-xs">
+              <Link to="/compare" className="compare-feature sv-btn-primary text-xs">
                 Open compare ({compareCount})
               </Link>
             ) : null}
@@ -455,7 +455,7 @@ export function ListingsPage() {
 
           {error ? (
             <p
-              className="mb-4 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#9a4f1f]"
+              className="mb-4 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#b45309]"
               role="alert"
             >
               {error}
@@ -529,7 +529,7 @@ export function ListingsPage() {
           >
             Clear
           </button>
-          <Link to="/compare" className="sv-btn-accent text-xs">
+          <Link to="/compare" className="compare-feature sv-btn-accent text-xs">
             Compare now
           </Link>
         </div>

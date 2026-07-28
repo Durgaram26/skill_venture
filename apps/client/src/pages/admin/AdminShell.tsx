@@ -217,7 +217,7 @@ export function AdminShell({
                   to={to}
                   end={end}
                   className={({ isActive }) =>
-                    isActive ? 'is-active !border-spark !bg-spark !shadow-[0_3px_0_#9a4f1f]' : undefined
+                    isActive ? 'is-active !border-spark !bg-spark !shadow-[0_3px_0_#b45309]' : undefined
                   }
                 >
                   <Icon />
@@ -229,7 +229,7 @@ export function AdminShell({
 
         {error ? (
           <p
-            className="mb-5 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#9a4f1f]"
+            className="mb-5 rounded-lg bg-spark-soft px-4 py-3 text-sm font-semibold text-[#b45309]"
             role="alert"
           >
             {error}

@@ -22,6 +22,9 @@ export function ListingDetailPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
 
   useEffect(() => {
     if (!slug) return;
@@ -76,6 +79,24 @@ export function ListingDetailPage() {
       await api.createEnquiry({ listingId: listing.id, message });
       track('enquiry_submit', { listingId: listing.id });
       setStatus('Enquiry sent! The institution will contact you soon.');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Enquiry failed');
+    }
+  }
+
+  async function enquireAsGuest(event: FormEvent) {
+    event.preventDefault();
+    if (!listing) return;
+    setStatus(null);
+    setError(null);
+    try {
+      await api.createEnquiry({
+        listingId: listing.id,
+        message,
+        contactInfo: { name: guestName, email: guestEmail, phone: guestPhone },
+      });
+      track('enquiry_submit', { listingId: listing.id, guest: true });
+      setStatus('Enquiry sent! The institution will contact you at your email/phone soon.');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Enquiry failed');
     }
@@ -318,14 +339,52 @@ export function ListingDetailPage() {
                   </p>
                 </form>
               ) : (
-                <div className="space-y-3">
-                  <Link to="/login" className="sv-btn-accent block w-full text-center text-base">
-                    Log in to enquire
-                  </Link>
+                <form onSubmit={enquireAsGuest} className="space-y-3">
+                  <input
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="Full name"
+                    className="sv-input"
+                    required
+                    minLength={2}
+                  />
+                  <input
+                    type="email"
+                    value={guestEmail}
+                    onChange={(e) => setGuestEmail(e.target.value)}
+                    placeholder="Email address"
+                    className="sv-input"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    value={guestPhone}
+                    onChange={(e) => setGuestPhone(e.target.value)}
+                    placeholder="Phone number"
+                    className="sv-input"
+                    required
+                    minLength={10}
+                  />
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={3}
+                    className="sv-input"
+                    placeholder="Your message"
+                    required
+                    minLength={10}
+                  />
+                  <button type="submit" className="sv-btn-accent w-full text-base">
+                    Send enquiry
+                  </button>
                   <p className="text-center text-xs text-mute">
-                    Browse freely — sign in only when you&apos;re ready to apply.
+                    No account needed.{' '}
+                    <Link to="/login" className="font-semibold text-teal">
+                      Log in
+                    </Link>{' '}
+                    to track your enquiries{!listing.fee.isFree && listing.fee.amount > 0 ? ' and pay to enroll' : ''}.
                   </p>
-                </div>
+                </form>
               )}
 
               <div className="flex gap-2">
@@ -337,7 +396,7 @@ export function ListingDetailPage() {
                 <button
                   type="button"
                   onClick={() => toggleCompare(listing.id)}
-                  className={`sv-btn-ghost flex-1 text-xs ${inCompare(listing.id) ? 'border-teal text-teal' : ''}`}
+                  className={`compare-feature sv-btn-ghost flex-1 text-xs ${inCompare(listing.id) ? 'border-teal text-teal' : ''}`}
                 >
                   {inCompare(listing.id) ? 'In compare' : 'Compare'}
                 </button>

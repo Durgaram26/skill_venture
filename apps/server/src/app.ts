@@ -3,7 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
-import { apiRateLimiter } from './middleware/rateLimit.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import listingsRouter, {
@@ -46,8 +45,6 @@ export function createApp() {
     }),
   );
   app.use(cookieParser());
-  app.use(apiRateLimiter);
-
   // Image uploads need a larger JSON body — register before the global parser.
   app.use('/api/v1/institutions/me/uploads', institutionUploadsRouter);
 

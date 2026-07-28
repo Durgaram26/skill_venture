@@ -37,11 +37,11 @@ export function LoginPage() {
       footer={
         <>
           New here?{' '}
-          <Link className="font-semibold text-[#0d7a6f] hover:underline" to="/register">
+          <Link className="font-semibold text-[#7c3aed] hover:underline" to="/register">
             Create an account
           </Link>
           {' · '}
-          <Link className="font-semibold text-[#0d7a6f] hover:underline" to="/register?role=institution">
+          <Link className="font-semibold text-[#7c3aed] hover:underline" to="/register?role=institution">
             List a program
           </Link>
         </>
@@ -49,9 +49,9 @@ export function LoginPage() {
     >
       <form
         onSubmit={onSubmit}
-        className="sv-auth-card space-y-4 rounded-2xl border border-[#d5e0dc] bg-white p-5 shadow-card sm:p-6"
+        className="sv-auth-card space-y-4 rounded-2xl border border-[#e5e7eb] bg-white p-5 shadow-card sm:p-6"
       >
-        <label className="block text-sm font-semibold text-[#102a28]">
+        <label className="block text-sm font-semibold text-[#111827]">
           Email
           <input
             className="sv-input mt-1.5"
@@ -63,7 +63,7 @@ export function LoginPage() {
             placeholder=" "
           />
         </label>
-        <label className="block text-sm font-semibold text-[#102a28]">
+        <label className="block text-sm font-semibold text-[#111827]">
           Password
           <input
             className="sv-input mt-1.5"
@@ -76,7 +76,7 @@ export function LoginPage() {
           />
         </label>
         {error ? (
-          <p className="rounded-lg bg-[#f8e6d8] px-3 py-2 text-sm font-semibold text-[#9a4f1f]" role="alert">
+          <p className="rounded-lg bg-[#fef3c7] px-3 py-2 text-sm font-semibold text-[#b45309]" role="alert">
             {error}
           </p>
         ) : null}

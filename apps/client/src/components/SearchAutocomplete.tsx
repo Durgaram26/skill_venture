@@ -28,6 +28,7 @@ type SearchAutocompleteProps = {
   inputId?: string;
   className?: string;
   dark?: boolean;
+  showSubmitButton?: boolean;
 };
 
 export function SearchAutocomplete({
@@ -38,6 +39,7 @@ export function SearchAutocomplete({
   inputId,
   className,
   dark,
+  showSubmitButton = false,
 }: SearchAutocompleteProps) {
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -138,6 +140,11 @@ export function SearchAutocomplete({
           aria-autocomplete="list"
           autoComplete="off"
         />
+        {showSubmitButton ? (
+          <button type="submit" className="sv-search-submit">
+            <span>Search</span>
+          </button>
+        ) : null}
       </form>
 
       {showPanel ? (

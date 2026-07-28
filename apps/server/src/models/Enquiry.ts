@@ -12,10 +12,12 @@ const contactInfoSchema = new Schema(
 
 const enquirySchema = new Schema(
   {
+    // Optional — guest enquiries (no login) store contact info only.
     studentId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
+      default: null,
       index: true,
     },
     listingId: {
