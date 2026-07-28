@@ -14,9 +14,9 @@ services:
     name: skillventures-api
     runtime: node
     plan: free
-    buildCommand: npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/server
+    buildCommand: npm ci --include=dev && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/server
     preDeployCommand: npm run seed -w @skillventures/server
-    startCommand: npm run start -w @skillventures/server
+    startCommand: npm run seed -w @skillventures/server && npm run start -w @skillventures/server
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -43,7 +43,7 @@ services:
   - type: web
     name: skillventures-web
     runtime: static
-    buildCommand: npm ci && npm run build -w @skillventures/shared-types && npm run fetch:mock-images -w @skillventures/server && npm run build -w @skillventures/client
+    buildCommand: npm ci --include=dev && npm run build -w @skillventures/shared-types && npm run fetch:mock-images -w @skillventures/server && npm run build -w @skillventures/client
     staticPublishPath: apps/client/dist
     routes:
       - type: rewrite
