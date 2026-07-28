@@ -14,7 +14,8 @@
     "seed:super-admin": "tsx src/scripts/seed-super-admin.ts",
     "seed:student": "tsx src/scripts/seed-student.ts",
     "fetch:mock-images": "tsx src/scripts/fetch-mock-images.ts",
-    "seed:mock": "tsx src/scripts/seed-mock-listings.ts"
+    "seed:mock": "tsx src/scripts/seed-mock-listings.ts",
+    "seed": "node dist/scripts/seed-super-admin.js && node dist/scripts/seed-admin.js && node dist/scripts/seed-student.js && node dist/scripts/seed-mock-listings.js"
   },
   "dependencies": {
     "@skillventures/shared-types": "*",

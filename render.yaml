@@ -1,6 +1,7 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
 # Connect repo → New Blueprint → select this file.
 # Set MONGODB_URI, JWT_ACCESS_SECRET, and JWT_REFRESH_SECRET in the Render dashboard.
+# preDeployCommand seeds super admin, admin, demo student, and mock listings on each deploy.
 
 services:
   - type: redis
@@ -14,6 +15,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/server
+    preDeployCommand: npm run seed -w @skillventures/server
     startCommand: npm run start -w @skillventures/server
     healthCheckPath: /health
     envVars:
@@ -41,7 +43,7 @@ services:
   - type: web
     name: skillventures-web
     runtime: static
-    buildCommand: npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/client
+    buildCommand: npm ci && npm run build -w @skillventures/shared-types && npm run fetch:mock-images -w @skillventures/server && npm run build -w @skillventures/client
     staticPublishPath: apps/client/dist
     routes:
       - type: rewrite
