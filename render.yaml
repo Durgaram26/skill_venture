@@ -1,0 +1,55 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Connect repo → New Blueprint → select this file.
+# Set MONGODB_URI, JWT_ACCESS_SECRET, and JWT_REFRESH_SECRET in the Render dashboard.
+
+services:
+  - type: redis
+    name: skillventures-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
+  - type: web
+    name: skillventures-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/server
+    startCommand: npm run start -w @skillventures/server
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: skillventures-redis
+          property: connectionString
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: skillventures-web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: COOKIE_SECURE
+        value: 'true'
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+
+  - type: web
+    name: skillventures-web
+    runtime: static
+    buildCommand: npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/client
+    staticPublishPath: apps/client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: skillventures-api
+          envVarKey: RENDER_EXTERNAL_URL
