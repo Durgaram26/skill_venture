@@ -1,11 +1,11 @@
 import type { Request, Response, NextFunction } from 'express';
-import { getRedis } from '../config/redis.js';
+import { getRedis, hasRedis } from '../config/redis.js';
 import { env } from '../config/env.js';
 
 const memory = new Map<string, { expires: number; value: string }>();
 
 async function cacheGet(key: string): Promise<string | null> {
-  if (env.NODE_ENV === 'test') {
+  if (env.NODE_ENV === 'test' || !hasRedis()) {
     const hit = memory.get(key);
     if (!hit || hit.expires < Date.now()) {
       memory.delete(key);
@@ -21,7 +21,7 @@ async function cacheGet(key: string): Promise<string | null> {
 }
 
 async function cacheSet(key: string, value: string, ttlSeconds: number): Promise<void> {
-  if (env.NODE_ENV === 'test') {
+  if (env.NODE_ENV === 'test' || !hasRedis()) {
     memory.set(key, { value, expires: Date.now() + ttlSeconds * 1000 });
     return;
   }
@@ -33,7 +33,7 @@ async function cacheSet(key: string, value: string, ttlSeconds: number): Promise
 }
 
 export async function invalidateListingCaches(): Promise<void> {
-  if (env.NODE_ENV === 'test') {
+  if (env.NODE_ENV === 'test' || !hasRedis()) {
     for (const key of memory.keys()) {
       if (key.startsWith('listings:') || key.startsWith('listing:')) memory.delete(key);
     }

@@ -3,7 +3,7 @@
  * Uses Redis in non-test environments; in-memory Map for Jest (no Docker required).
  */
 import { env } from '../../config/env.js';
-import { getRedis } from '../../config/redis.js';
+import { getRedis, hasRedis } from '../../config/redis.js';
 
 interface TokenStore {
   set(key: string, value: string, ttlSeconds: number): Promise<void>;
@@ -108,7 +108,7 @@ class RedisTokenStore implements TokenStore {
 const memoryStore = new MemoryTokenStore();
 
 export function getTokenStore(): TokenStore {
-  return env.NODE_ENV === 'test' ? memoryStore : new RedisTokenStore();
+  return env.NODE_ENV === 'test' || !hasRedis() ? memoryStore : new RedisTokenStore();
 }
 
 export function flushMemoryTokenStore(): void {

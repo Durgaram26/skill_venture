@@ -1,12 +1,12 @@
 import rateLimit from 'express-rate-limit';
 import { RedisStore } from 'rate-limit-redis';
 import type { RedisReply } from 'rate-limit-redis';
-import { getRedis } from '../config/redis.js';
+import { getRedis, hasRedis } from '../config/redis.js';
 import { env } from '../config/env.js';
 
 function createRedisStore(prefix: string): RedisStore | undefined {
-  if (env.NODE_ENV === 'test') {
-    return undefined;
+  if (env.NODE_ENV === 'test' || !hasRedis()) {
+    return undefined; // express-rate-limit falls back to its own in-memory store
   }
 
   const client = getRedis();
