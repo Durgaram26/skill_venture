@@ -1,16 +1,14 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, '../..');
 
 const nodeEnv = process.env.NODE_ENV ?? 'development';
+
+// In production (Netlify Functions / Railway), env vars are injected by the platform.
+// Only load .env files for local development and tests.
 if (nodeEnv === 'test') {
-  dotenv.config({ path: path.join(root, '.env.test') });
-} else {
-  dotenv.config({ path: path.join(root, '.env') });
+  dotenv.config({ path: '.env.test' });
+} else if (nodeEnv !== 'production') {
+  dotenv.config({ path: '.env' });
 }
 
 const envSchema = z.object({

@@ -1,12 +1,15 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { AppError } from '../../utils/AppError.js';
 import type { ListingImageUploadInput } from './uploads.validation.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOAD_DIR = path.resolve(__dirname, '../../../../client/public/uploads/listings');
+// In serverless environments (Netlify Functions) only /tmp is writable.
+// In local dev the uploads land in the client's public dir via the dev server.
+const UPLOAD_DIR =
+  process.env.NODE_ENV === 'production'
+    ? '/tmp/uploads/listings'
+    : path.resolve(process.cwd(), 'apps/client/public/uploads/listings');
 const MAX_BYTES = 5 * 1024 * 1024;
 
 const EXT: Record<ListingImageUploadInput['mimeType'], string> = {

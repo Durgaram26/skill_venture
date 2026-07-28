@@ -4,23 +4,13 @@
     cd ../.. &&
     NODE_ENV=development npm ci &&
     npm run build -w @skillventures/shared-types &&
-    node_modules/.bin/esbuild netlify/functions/api.ts \
-      --bundle \
-      --platform=node \
-      --target=node20 \
-      --format=cjs \
-      --outfile=netlify/functions/api.cjs \
-      --external:@aws-sdk \
-      --external:mock-aws-s3 \
-      --external:nock \
-      --external:aws-sdk &&
     npm run build -w @skillventures/client
   """
   publish = "dist"
   functions = "../../netlify/functions"
 
 [functions]
-  node_bundler = "none"
+  node_bundler = "esbuild"
 
 [build.environment]
   NODE_VERSION = "20"
