@@ -11,11 +11,11 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "npx tsc -p tsconfig.json",
+    "typecheck": "npx tsc -p tsconfig.json --noEmit",
     "lint": "eslint src --ext .ts"
   },
-  "devDependencies": {
+  "dependencies": {
     "typescript": "^5.7.2"
   }
 }
