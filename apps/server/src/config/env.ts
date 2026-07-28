@@ -41,8 +41,11 @@ function loadEnv(): Env {
   });
   if (!parsed.success) {
     const details = parsed.error.flatten().fieldErrors;
+    // Log clearly so the reason appears in Netlify function logs
+    console.error('[env] ❌ Missing/invalid environment variables:', JSON.stringify(details, null, 2));
     throw new Error(`Invalid environment configuration: ${JSON.stringify(details)}`);
   }
+  console.log('[env] ✅ Environment validated (NODE_ENV=%s)', parsed.data.NODE_ENV);
   return parsed.data;
 }
 
