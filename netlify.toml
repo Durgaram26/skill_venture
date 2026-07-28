@@ -1,6 +1,6 @@
 [build]
   base = "apps/client"
-  command = "cd ../.. && npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/client"
+  command = "cd ../.. && NODE_ENV=development npm ci && npm run build -w @skillventures/shared-types && npm run build -w @skillventures/client"
   publish = "dist"
 
 [build.environment]
