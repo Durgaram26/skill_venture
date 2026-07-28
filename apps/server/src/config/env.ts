@@ -12,7 +12,12 @@ if (nodeEnv === 'test') {
 }
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production', 'staging']).default('development'),
+  // Trim and take first word only — guards against accidental values like "development npm ci"
+  NODE_ENV: z
+    .string()
+    .default('development')
+    .transform((v) => v.trim().split(/\s+/)[0] ?? 'development')
+    .pipe(z.enum(['development', 'test', 'production', 'staging'])),
   PORT: z.coerce.number().default(4000),
   MONGODB_URI: z.string().min(1),
   REDIS_URL: z.string().min(1).optional(),
