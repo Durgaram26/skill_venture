@@ -21,7 +21,8 @@ export function ListingDetailPage() {
   );
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [paying, setPaying] = useState(false);
+  // Student payment/enrollment is temporarily disabled; retain the flow for a future release.
+  // const [paying, setPaying] = useState(false);
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
@@ -118,6 +119,7 @@ export function ListingDetailPage() {
     }
   }
 
+  /*
   async function payAndEnroll() {
     if (!listing) return;
     setPaying(true);
@@ -143,6 +145,7 @@ export function ListingDetailPage() {
       setPaying(false);
     }
   }
+  */
 
   if (error && !listing) {
     return (
@@ -322,20 +325,14 @@ export function ListingDetailPage() {
                   <button type="submit" className="sv-btn-ghost w-full text-base">
                     Enquire only
                   </button>
-                  {!listing.fee.isFree && listing.fee.amount > 0 ? (
-                    <button
-                      type="button"
-                      disabled={paying}
-                      onClick={() => void payAndEnroll()}
-                      className="sv-btn-accent w-full text-base disabled:opacity-60"
-                    >
-                      {paying ? 'Processing…' : `Pay ${feeLabel} & enroll`}
-                    </button>
-                  ) : null}
+                  {/*
+                    Student payment/enrollment is temporarily disabled. Restore this button and
+                    payment note when the payment feature is enabled again.
+                  */}
                   <p className="text-center text-xs text-mute">
-                    {!listing.fee.isFree && listing.fee.amount > 0
-                      ? 'Payment goes to the institution (minus a small SkillVentures fee). Mock checkout in local dev.'
-                      : 'This program is free — enquire and the partner will follow up.'}
+                    {listing.fee.isFree || listing.fee.amount <= 0
+                      ? 'This program is free — enquire and the partner will follow up.'
+                      : 'Enquire with the institution for the next steps.'}
                   </p>
                 </form>
               ) : (
@@ -382,7 +379,7 @@ export function ListingDetailPage() {
                     <Link to="/login" className="font-semibold text-teal">
                       Log in
                     </Link>{' '}
-                    to track your enquiries{!listing.fee.isFree && listing.fee.amount > 0 ? ' and pay to enroll' : ''}.
+                    to track your enquiries.
                   </p>
                 </form>
               )}

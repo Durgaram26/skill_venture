@@ -7,20 +7,20 @@
   background: #f9fafb;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   min-height: 100%;
-  --sv-teal: #7c3aed;
+  --sv-teal: #f97316;
   --sv-spark: #f59e0b;
   --sv-ink: #111827;
   --sv-void: #1e1b2e;
   --sv-line: #e5e7eb;
   --sv-paper: #ffffff;
   --sv-mute: #4b5563;
-  --sv-teal-soft: #ede9fe;
+  --sv-teal-soft: #ffedd5;
   --sv-spark-soft: #fef3c7;
   --sv-chalk: #f9fafb;
   --sv-shadow-card: 0 1px 0 rgba(17, 24, 39, 0.06), 0 12px 28px rgba(30, 27, 46, 0.08);
   --sv-shadow-lift: 0 18px 40px rgba(30, 27, 46, 0.16);
   --sv-font-display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --sv-btn-base: #6d28d9;
+  --sv-btn-base: #c2410c;
   --ani-dur: 500ms;
   --ani-ease: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
@@ -62,11 +62,67 @@ body {
   object-fit: cover;
   object-position: center;
 }
+.sv-wordmark { display: inline-flex; flex-direction: column; gap: 0.12rem; line-height: 1; }
+.sv-wordmark-name { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; font-size: 1.45rem; font-weight: 850; letter-spacing: -0.045em; }
+.sv-wordmark-name .sv-brand-mark { width: 2rem; height: 2rem; }
+.sv-wordmark-skill { color: #102d80; }
+.sv-wordmark-skill--dark { color: #ffffff; }
+.sv-wordmark-ventures { color: #f36b16; }
+.sv-wordmark-tagline { display: flex; align-items: center; justify-content: center; gap: 0.4rem; color: #29313f; font-size: 0.46rem; font-weight: 800; letter-spacing: 0.25em; }
+.sv-wordmark-tagline i { display: inline-block; width: 1.8rem; border-top: 2px solid #102d80; }
+.sv-wordmark-tagline b { color: #f36b16; font-size: 0.7rem; }
+.sv-wordmark--compact .sv-brand-mark { width: 1.9rem; height: 1.9rem; }
+.sv-wordmark--compact .sv-wordmark-name { font-size: 1.4rem; }
+.sv-brand-inline { color: #102d80; white-space: nowrap; }
+.sv-brand-inline span { color: #f36b16; }
 
 /* Organic Modernism — curved hero frame (Developer DNA) */
 .sv-hero-curve {
   clip-path: ellipse(150% 100% at 50% 0%);
 }
+
+/* Profile settings card */
+.sv-profile-hero {
+  position: relative;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(139, 92, 246, 0.13) 0 74px, transparent 75px),
+    radial-gradient(circle at 72% 20%, rgba(167, 139, 250, 0.18) 0 46px, transparent 47px),
+    linear-gradient(115deg, #faf9ff 0%, #f4f1ff 55%, #eee9ff 100%);
+}
+.sv-profile-hero::after {
+  content: '';
+  position: absolute;
+  right: -8%;
+  bottom: -55%;
+  width: 55%;
+  height: 100%;
+  border: 3px solid rgba(124, 58, 237, 0.22);
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+.sv-profile-hero-art {
+  position: relative;
+}
+.sv-profile-art-card {
+  position: absolute;
+  right: 15%;
+  top: 4%;
+  display: flex;
+  width: 220px;
+  height: 150px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  color: #6d28d9;
+  box-shadow: 0 20px 35px rgba(76, 29, 149, 0.16);
+  transform: rotate(7deg);
+}
+.sv-profile-art-card svg { width: 76px; height: 76px; padding: 14px; border-radius: 50%; background: #7c3aed; color: white; stroke-width: 1.4; }
+.sv-profile-art-pencil { position: absolute; right: 48%; top: 3%; display: grid; width: 78px; height: 78px; place-items: center; border-radius: 18px; background: #7c3aed; color: white; font-size: 44px; box-shadow: 0 14px 25px rgba(76, 29, 149, 0.28); transform: rotate(-7deg); }
+.sv-profile-art-dots { position: absolute; left: 10%; bottom: 12%; width: 86px; height: 52px; background-image: radial-gradient(#c4b5fd 2px, transparent 2px); background-size: 18px 18px; }
+.sv-profile-secure { border: 1px solid #ddd6fe; background: linear-gradient(110deg, #f5f3ff, #faf9ff); }
 
 /**
  * Bug 8 fix — site footer must own BOTH background + text color in one class.
@@ -148,7 +204,7 @@ body {
   box-shadow: 0 6px 0 var(--sv-btn-base);
 }
 .sv-btn-primary:hover {
-  background-color: #8b5cf6;
+  background-color: #fb923c;
 }
 .sv-btn-primary:active {
   transform: translateY(6px);

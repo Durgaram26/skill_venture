@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { BrandWordmark } from './BrandWordmark';
 
 /**
  * Solid dark auth chrome — never rely on Tailwind bg-void alone
@@ -38,8 +39,8 @@ export function AuthLayout({
           />
 
           <div className="relative z-[1]">
-            <Link to="/" className="font-display text-2xl font-extrabold tracking-tight drop-shadow-sm">
-              Skill<span className="text-[#a78bfa]">Ventures</span>
+            <Link to="/" className="inline-flex drop-shadow-sm">
+              <BrandWordmark compact onDark />
             </Link>
           </div>
 
@@ -60,18 +61,16 @@ export function AuthLayout({
             </ul>
           </div>
 
-          <p className="relative z-[1] text-xs font-semibold text-[#f1f5f4]/75">
-            © {new Date().getFullYear()} SkillVentures
-          </p>
+          <p className="relative z-[1] text-xs font-semibold text-[#f1f5f4]/75">© {new Date().getFullYear()} SkillVentures</p>
         </aside>
 
         <main className="sv-auth-main flex flex-col justify-center px-5 py-10 sm:px-10 lg:px-14 xl:px-16">
           <div className="mx-auto w-full max-w-md">
             <Link
               to="/"
-              className="mb-8 inline-block font-display text-xl font-extrabold tracking-tight text-[#111827] lg:hidden"
+              className="mb-8 inline-flex lg:hidden"
             >
-              Skill<span className="text-[#7c3aed]">Ventures</span>
+              <BrandWordmark compact />
             </Link>
             <h1 className="font-display text-3xl font-extrabold tracking-tight text-[#111827]">
               {title}

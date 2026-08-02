@@ -29,7 +29,8 @@ import { ComparePage } from './pages/ComparePage';
 import { InstitutionBillingPage } from './pages/InstitutionBillingPage';
 import { InstitutionAnalyticsPage } from './pages/InstitutionAnalyticsPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage';
-import { StudentPaymentsPage } from './pages/StudentPaymentsPage';
+// Student payments are temporarily disabled; keep the page for a future payments release.
+// import { StudentPaymentsPage } from './pages/StudentPaymentsPage';
 
 let authBootstrap: Promise<void> | null = null;
 
@@ -82,7 +83,8 @@ export function App() {
       <Route path="/institution/analytics" element={<InstitutionAnalyticsPage />} />
       <Route path="/student/enquiries" element={<StudentEnquiriesPage />} />
       <Route path="/student/bookmarks" element={<BookmarksPage />} />
-      <Route path="/student/payments" element={<StudentPaymentsPage />} />
+      {/* Student payments are temporarily disabled; restore this route when payments launch. */}
+      {/* <Route path="/student/payments" element={<StudentPaymentsPage />} /> */}
       <Route path="/profile" element={<ProfileSettingsPage />} />
       <Route path="/admin" element={<AdminOverviewPage />} />
       <Route path="/admin/institutions" element={<AdminInstitutionsPage />} />

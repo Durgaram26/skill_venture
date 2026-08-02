@@ -4,6 +4,7 @@ import type { ListingSummary } from '@skillventures/shared-types';
 import { api } from '../lib/api';
 import { SearchAutocomplete } from '../components/SearchAutocomplete';
 import { MarketplaceShell } from '../components/AppShell';
+import { BrandWordmark } from '../components/BrandWordmark';
 
 /* ────────────────────────────────────────────────────────────
    SkillVentures home — reference mockup styling, real DB data.
@@ -52,7 +53,7 @@ export function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Launch Your <span className="text-purple-600"> SkillVentures </span> Journey
+              Launch Your <span className="sv-brand-inline">Skill<span>Ventures</span></span> Journey
             </h1>
             <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
               Master new skills through interactive courses, live bootcamps, and group learning
@@ -207,9 +208,7 @@ export function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <div className="text-2xl font-bold text-white mb-4 flex items-center">
-                SkillVentures
-              </div>
+              <div className="mb-4"><BrandWordmark compact onDark /></div>
               <p className="text-gray-400">
                 Launch your learning journey with interactive courses, bootcamps, and hackathons.
               </p>

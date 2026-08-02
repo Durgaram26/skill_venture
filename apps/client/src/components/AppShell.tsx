@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../features/auth/authStore';
 import { UserProfileMenu } from './UserProfileMenu';
 import { SearchAutocomplete } from './SearchAutocomplete';
-import logoOnly from '../assets/illustrations/logo_only.png';
+import { BrandWordmark } from './BrandWordmark';
 
 function IconBook(props: SVGProps<SVGSVGElement>) {
   return (
@@ -119,7 +119,6 @@ export function MarketplaceShell({
   if (user?.role === 'student') {
     mobileLinks.push(
       { to: '/student/enquiries', label: 'My learning' },
-      { to: '/student/payments', label: 'Payments' },
       { to: '/student/bookmarks', label: 'Saved' },
     );
   }
@@ -150,10 +149,9 @@ export function MarketplaceShell({
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 md:gap-4 md:px-6 md:py-3">
           <Link
             to="/"
-            className="flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight text-teal md:text-2xl"
+            className="flex shrink-0 items-center"
           >
-            <img src={logoOnly} alt="" className="sv-brand-mark" />
-            <span>SkillVentures</span>
+            <BrandWordmark compact />
           </Link>
 
           {!bare && !hideSearch ? (
@@ -206,9 +204,7 @@ export function MarketplaceShell({
                   <IconBook />
                   My learning
                 </NavLink>
-                <NavLink to="/student/payments" className={navClass}>
-                  Payments
-                </NavLink>
+                {/* Student payments are temporarily disabled; keep this route for future use. */}
                 <NavLink to="/student/bookmarks" className={navClass}>
                   <IconBookmark />
                   Saved
@@ -297,7 +293,7 @@ export function MarketplaceShell({
       <main className={bare || fullWidth ? '' : 'mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10'}>
         {title ? (
           <div className="mb-8 animate-rise">
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-mute">SkillVentures</p>
+            <div className="mb-2"><BrandWordmark compact /></div>
             <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink md:text-4xl">
               {title}
             </h1>
@@ -312,9 +308,7 @@ export function MarketplaceShell({
           <div className="mx-auto max-w-7xl px-4 md:px-6">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               <div>
-                <div className="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
-                  SkillVentures
-                </div>
+                <div className="mb-4"><BrandWordmark compact onDark /></div>
                 <p className="text-gray-400">
                   The discovery layer for India&apos;s courses, bootcamps, and hackathons.
                 </p>

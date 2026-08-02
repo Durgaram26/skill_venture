@@ -104,11 +104,7 @@ export function UserProfileMenu({ dark, variant = 'rail', onNavigate }: UserProf
           <Link to="/profile" onClick={onNavigate}>
             Profile settings
           </Link>
-          {user.role === 'student' ? (
-            <Link to="/student/payments" onClick={onNavigate}>
-              My payments
-            </Link>
-          ) : null}
+          {/* Student payments are temporarily disabled; restore this link when payments launch. */}
           {user.role === 'institution' ? (
             <Link to="/institution/billing" onClick={onNavigate}>
               Billing & earnings
@@ -157,15 +153,7 @@ export function UserProfileMenu({ dark, variant = 'rail', onNavigate }: UserProf
             <button type="button" role="menuitem" onClick={() => closeAndNavigate('/profile')}>
               Profile settings
             </button>
-            {user.role === 'student' ? (
-              <button
-                type="button"
-                role="menuitem"
-                onClick={() => closeAndNavigate('/student/payments')}
-              >
-                My payments
-              </button>
-            ) : null}
+            {/* Student payments are temporarily disabled; restore this action when payments launch. */}
             {user.role === 'institution' ? (
               <button
                 type="button"
