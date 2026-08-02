@@ -168,6 +168,12 @@ export function ListingDetailPage() {
 
   const feeLabel = listing.fee.isFree ? 'Free' : `₹${listing.fee.amount.toLocaleString('en-IN')}`;
   const cover = listing.images?.[0];
+  const locationLabel = [listing.location?.address, listing.location?.city, listing.location?.state]
+    .filter(Boolean)
+    .join(', ');
+  const mapUrl = locationLabel
+    ? `https://www.google.com/maps?q=${encodeURIComponent(locationLabel)}&output=embed`
+    : null;
 
   return (
     <MarketplaceShell>
@@ -270,25 +276,30 @@ export function ListingDetailPage() {
           ) : null}
 
           {listing.type === 'hackathon' && listing.hackathon ? (
-            <section>
-              <h2 className="font-display text-xl font-bold">Hackathon details</h2>
-              <ul className="mt-3 space-y-2 text-sm text-ink/80">
+            <section className="sv-event-details rounded-2xl border border-line bg-paper p-5 shadow-sm">
+              <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-teal">Event information</p><h2 className="mt-1 font-display text-xl font-bold">Hackathon details</h2></div><span className="sv-event-icon"><i className="fas fa-trophy" aria-hidden /></span></div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {listing.hackathon.startDate ? (
-                  <li>Starts {new Date(listing.hackathon.startDate).toLocaleDateString()}</li>
+                  <EventFact icon="fa-calendar-day" label="Starts" value={formatEventDate(listing.hackathon.startDate)} />
                 ) : null}
                 {listing.hackathon.endDate ? (
-                  <li>Ends {new Date(listing.hackathon.endDate).toLocaleDateString()}</li>
+                  <EventFact icon="fa-calendar-check" label="Ends" value={formatEventDate(listing.hackathon.endDate)} />
                 ) : null}
                 {listing.hackathon.prizePool != null ? (
-                  <li>Prize pool: ₹{listing.hackathon.prizePool.toLocaleString('en-IN')}</li>
+                  <EventFact icon="fa-sack-dollar" label="Prize pool" value={`₹${listing.hackathon.prizePool.toLocaleString('en-IN')}`} accent />
                 ) : null}
                 {listing.hackathon.teamSizeMax != null ? (
-                  <li>Max team size: {listing.hackathon.teamSizeMax}</li>
+                  <EventFact icon="fa-people-group" label="Max team size" value={`${listing.hackathon.teamSizeMax} members`} />
                 ) : null}
-                {listing.hackathon.sponsors?.length ? (
-                  <li>Sponsors: {listing.hackathon.sponsors.join(', ')}</li>
-                ) : null}
-              </ul>
+              </div>
+              {listing.hackathon.sponsors?.length ? <div className="mt-5 border-t border-line pt-4"><p className="text-xs font-bold uppercase tracking-wide text-mute">Presented by</p><div className="mt-2 flex flex-wrap gap-2">{listing.hackathon.sponsors.map((sponsor) => <span key={sponsor} className="sv-sponsor-chip">{sponsor}</span>)}</div></div> : null}
+            </section>
+          ) : null}
+
+          {locationLabel ? (
+            <section className="sv-location-panel rounded-2xl border border-line bg-paper p-5 shadow-sm">
+              <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-teal">Where it happens</p><h2 className="mt-1 font-display text-xl font-bold">Location</h2><p className="mt-2 text-sm text-mute"><i className="fas fa-location-dot mr-2 text-teal" aria-hidden />{locationLabel}</p></div><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationLabel)}`} target="_blank" rel="noreferrer" className="sv-btn-ghost text-xs"><i className="fas fa-diamond-turn-right" aria-hidden />Open in Maps</a></div>
+              {mapUrl ? <iframe title={`Map showing ${locationLabel}`} src={mapUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="sv-location-map mt-5 w-full" /> : null}
             </section>
           ) : null}
 
@@ -407,6 +418,14 @@ export function ListingDetailPage() {
       </div>
     </MarketplaceShell>
   );
+}
+
+function formatEventDate(value: string) {
+  return new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function EventFact({ icon, label, value, accent = false }: { icon: string; label: string; value: string; accent?: boolean }) {
+  return <div className="sv-event-fact"><span className="sv-event-fact-icon"><i className={`fas ${icon}`} aria-hidden /></span><span><small>{label}</small><strong className={accent ? 'text-orange-600' : ''}>{value}</strong></span></div>;
 }
 
 function ReviewsSection({

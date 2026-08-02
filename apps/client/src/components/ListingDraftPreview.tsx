@@ -29,8 +29,8 @@ function toPreviewListing(draft: ListingDraft): ListingSummary {
     },
     mode: draft.mode,
     location:
-      draft.city || draft.state
-        ? { city: draft.city || 'City', state: draft.state || 'State' }
+      draft.city || draft.state || draft.address
+        ? { city: draft.city || 'City', state: draft.state || 'State', address: draft.address || undefined }
         : undefined,
     status: 'draft',
     rating: { avg: 0, count: 0 },

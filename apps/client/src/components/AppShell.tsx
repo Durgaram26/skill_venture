@@ -136,17 +136,17 @@ export function MarketplaceShell({
   }
 
   return (
-    <div className="sv-app-shell min-h-screen bg-chalk text-ink" data-header-surface={headerSurface}>
+    <div className={`sv-app-shell min-h-screen bg-chalk text-ink ${location.pathname === '/' ? 'sv-home-shell' : ''}`} data-header-surface={headerSurface}>
       <header
         data-site-header
         data-header-surface={headerSurface}
-        className={`sticky top-0 z-50 border-b ${
+        className={`sv-site-header sticky top-0 z-50 border-b ${
           dark
             ? 'border-white/10 bg-void text-white shadow-[0_1px_0_rgba(255,255,255,0.06)]'
             : 'border-line bg-paper text-ink shadow-sm'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 md:gap-4 md:px-6 md:py-3">
+        <div className="sv-site-header-row mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 md:gap-4 md:px-6 md:py-3">
           <Link
             to="/"
             className="flex shrink-0 items-center"
@@ -171,27 +171,27 @@ export function MarketplaceShell({
               <i className="fas fa-home" aria-hidden />
               Home
             </NavLink>
-            <NavLink
+            <Link
               to="/listings?type=course"
               className={location.pathname === '/listings' && listingType === 'course' ? 'is-active' : undefined}
             >
               <i className="fas fa-book-open" aria-hidden />
               Courses
-            </NavLink>
-            <NavLink
+            </Link>
+            <Link
               to="/listings?type=bootcamp"
               className={location.pathname === '/listings' && listingType === 'bootcamp' ? 'is-active' : undefined}
             >
               <i className="fas fa-fire" aria-hidden />
               Bootcamps
-            </NavLink>
-            <NavLink
+            </Link>
+            <Link
               to="/listings?type=hackathon"
               className={location.pathname === '/listings' && listingType === 'hackathon' ? 'is-active' : undefined}
             >
               <i className="fas fa-trophy" aria-hidden />
               Hackathons
-            </NavLink>
+            </Link>
             {user?.role === 'institution' ? (
               <NavLink to="/institution" className={navClass}>
                 <i className="fas fa-layer-group" aria-hidden />

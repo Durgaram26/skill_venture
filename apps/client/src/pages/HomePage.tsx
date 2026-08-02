@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { ListingSummary } from '@skillventures/shared-types';
 import { api } from '../lib/api';
-import { SearchAutocomplete } from '../components/SearchAutocomplete';
 import { MarketplaceShell } from '../components/AppShell';
 import { BrandWordmark } from '../components/BrandWordmark';
 
@@ -29,9 +28,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const shortDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString() : 'TBA');
 
 export function HomePage() {
-  const navigate = useNavigate();
   const [listings, setListings] = useState<ListingSummary[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     void api.listListings(new URLSearchParams()).then((res) => {
@@ -46,45 +43,29 @@ export function HomePage() {
   const hackathons = byType('hackathon').slice(0, 2);
 
   return (
-    <MarketplaceShell fullWidth hideSearch hideFooter>
-      <div className="sv-mock bg-gray-50">
+    <MarketplaceShell fullWidth hideFooter>
+      <div className="sv-mock sv-home-theme bg-white">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-purple-50 to-indigo-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Launch Your <span className="sv-brand-inline">Skill<span>Ventures</span></span> Journey
+      <section className="sv-home-hero">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-12 md:grid-cols-[.92fr_1.08fr] md:px-10 md:py-16">
+          <div>
+            <h1 className="font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-slate-950 md:text-5xl">
+              Launch Your<br /><span className="text-orange-500">SkillVentures</span> Journey
             </h1>
-            <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
-              Master new skills through interactive courses, live bootcamps, and group learning
-              experiences. Learn better together.
+            <p className="mt-5 max-w-lg text-sm leading-6 text-slate-600 md:text-base">
+              Master new skills through interactive courses, live bootcamps, and group learning experiences. Learn better together.
             </p>
-            <div className="flex justify-center space-x-4 flex-wrap gap-4">
-              <Link to="/listings?type=course" className="bg-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors text-lg">
-                <i className="fas fa-book-open mr-2" />Explore Courses
-              </Link>
-              <Link to="/listings?type=hackathon" className="border border-purple-600 text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-purple-50 transition-colors text-lg">
-                <i className="fas fa-trophy mr-2" />Join Hackathons
-              </Link>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link to="/listings?type=course" className="sv-home-blue-btn"><i className="fas fa-book-open" />Explore Courses</Link>
+              <Link to="/listings?type=hackathon" className="sv-home-outline-btn"><i className="fas fa-trophy" />Join Hackathons</Link>
             </div>
+            <div className="mt-6 flex items-center gap-3 text-xs font-semibold text-slate-700"><span className="sv-avatar-stack"><i /> <i /> <i /> <i /></span> Join <strong className="text-blue-700">10,000+</strong> learners building their future</div>
           </div>
-        </div>
-      </section>
-
-      {/* Homepage search */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Find your next opportunity</h2>
-            <SearchAutocomplete
-              value={searchQuery}
-              onChange={setSearchQuery}
-              onSubmit={(value) => navigate(value ? `/listings?q=${encodeURIComponent(value)}` : '/listings')}
-              placeholder="What skill are you building?"
-              inputId="homepage-search"
-              showSubmitButton
-              className="sv-home-search w-full max-w-none text-left"
-            />
+          <div className="sv-home-hero-visual" aria-label="Learning illustration placeholder">
+            <div className="sv-progress-card"><small>Your Progress</small><strong>75%</strong><span>Keep going!</span></div>
+            <div className="sv-hero-image-slot"><img src="/images/home-girl.png" alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} /></div>
+            <div className="sv-certificate-card">▣ &nbsp; Certificates Earned<br /><strong>12</strong></div>
+            <div className="sv-hero-dots" />
           </div>
         </div>
       </section>
@@ -93,8 +74,8 @@ export function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHead
-            icon="fa-star"
-            iconColor="text-yellow-500"
+            icon="fa-book-open"
+            iconColor="text-blue-600"
             title="Featured Courses"
             sub="Handpicked courses to kickstart your learning journey"
             linkTo="/listings?type=course"
@@ -113,7 +94,7 @@ export function HomePage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHead
-            icon="fa-fire"
+            icon="fa-person-chalkboard"
             iconColor="text-orange-500"
             title="Live Bootcamps"
             sub="Interactive, intensive learning experiences starting soon"
@@ -186,8 +167,9 @@ export function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="sv-home-cta py-16 bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
+        <div className="relative mx-auto max-w-[1580px] px-4 sm:px-8 lg:px-12 text-center">
+          <div className="sv-cta-rocket"><img src="/images/home-rocket.png" alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} /></div>
           <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Career?</h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
             Join thousands of learners who have already started their journey with SkillVentures
@@ -268,7 +250,7 @@ function SectionHead({
     <div className="flex justify-between items-center mb-12">
       <div>
         <h2 className={`text-3xl font-bold ${titleColor} section-title`}>
-          <i className={`fas ${icon} ${iconColor} mr-3`} />
+          <i className={`fas ${icon} ${iconColor} mr-3`} aria-hidden="true" />
           {title}
         </h2>
         <p className={`${subColor} mt-8`}>{sub}</p>
@@ -279,6 +261,7 @@ function SectionHead({
     </div>
   );
 }
+
 
 function Grid({
   items,

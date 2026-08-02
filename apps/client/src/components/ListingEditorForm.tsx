@@ -140,6 +140,7 @@ export function ListingEditorForm({
       <section className="grid gap-3 sm:grid-cols-2">
         <Field label="City" value={draft.city} onChange={(value) => patch('city', value)} />
         <Field label="State" value={draft.state} onChange={(value) => patch('state', value)} />
+        <div className="sm:col-span-2"><Field label="Venue / address" value={draft.address} onChange={(value) => patch('address', value)} placeholder="e.g. KTPO, Whitefield, Bengaluru" /><p className="mt-1 text-xs text-mute">Add the physical venue so learners can open it on a map.</p></div>
       </section>
 
       {draft.type === 'bootcamp' ? (

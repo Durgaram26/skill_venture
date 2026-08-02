@@ -75,7 +75,7 @@ export const api = {
   me() {
     return request<{ user: AuthPayload['user'] }>('/api/v1/auth/me');
   },
-  updateProfile(payload: { name?: string; email?: string; phone?: string }) {
+  updateProfile(payload: { name?: string; email?: string; phone?: string; about?: string }) {
     return request<{ user: AuthPayload['user'] }>('/api/v1/auth/me', {
       method: 'PATCH',
       body: JSON.stringify(payload),

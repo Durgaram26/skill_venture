@@ -62,9 +62,10 @@ export const updateProfileSchema = z
         z.literal(''),
       ])
       .optional(),
+    about: z.string().trim().max(500, 'About must be 500 characters or less').optional(),
   })
   .strict()
-  .refine((data) => data.name !== undefined || data.email !== undefined || data.phone !== undefined, {
+  .refine((data) => data.name !== undefined || data.email !== undefined || data.phone !== undefined || data.about !== undefined, {
     message: 'At least one field is required',
   });
 

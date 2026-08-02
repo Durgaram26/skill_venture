@@ -101,6 +101,9 @@ export function UserProfileMenu({ dark, variant = 'rail', onNavigate }: UserProf
           </div>
         </div>
         <div className="sv-profile-mobile-actions">
+          <Link to="/profile/view" onClick={onNavigate}>
+            View profile
+          </Link>
           <Link to="/profile" onClick={onNavigate}>
             Profile settings
           </Link>
@@ -150,6 +153,9 @@ export function UserProfileMenu({ dark, variant = 'rail', onNavigate }: UserProf
             </div>
           </div>
           <div className="sv-profile-dropdown-actions">
+            <button type="button" role="menuitem" onClick={() => closeAndNavigate('/profile/view')}>
+              View profile
+            </button>
             <button type="button" role="menuitem" onClick={() => closeAndNavigate('/profile')}>
               Profile settings
             </button>

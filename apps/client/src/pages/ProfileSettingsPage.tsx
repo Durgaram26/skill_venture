@@ -4,7 +4,7 @@ import { MarketplaceShell } from '../components/AppShell';
 import { useAuthStore } from '../features/auth/authStore';
 import { api, ApiError } from '../lib/api';
 
-type ProfileForm = { name: string; email: string; phone: string };
+type ProfileForm = { name: string; email: string; phone: string; about: string };
 
 function Icon({ children }: { children: ReactNode }) {
   return (
@@ -45,6 +45,7 @@ export function ProfileSettingsPage() {
     name: user?.name ?? '',
     email: user?.email ?? '',
     phone: user?.phone ?? '',
+    about: user?.profile?.about ?? '',
   };
   const [form, setForm] = useState<ProfileForm>(userForm);
   const [savedForm, setSavedForm] = useState<ProfileForm | null>(userForm);
@@ -62,7 +63,7 @@ export function ProfileSettingsPage() {
     let cancelled = false;
     void api.me().then((data) => {
       if (cancelled) return;
-      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '' };
+      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '', about: data.user.profile?.about ?? '' };
       setForm(next);
       setSavedForm(next);
       updateUser(data.user);
@@ -76,6 +77,7 @@ export function ProfileSettingsPage() {
 
   const initials = useMemo(() => form.name.split(/\s+/).filter(Boolean).map((part) => part[0]).slice(0, 2).join('').toUpperCase() || 'SV', [form.name]);
   const role = user?.role.replace('_', ' ') ?? 'student';
+  const profileCompletion = Math.round(([form.name, form.email, form.phone, form.about, user?.profile?.avatar].filter(Boolean).length / 5) * 100);
   const setField = (field: keyof ProfileForm, value: string) => setForm((current) => ({ ...current, [field]: value }));
 
   async function onSubmit(event: FormEvent) {
@@ -84,8 +86,8 @@ export function ProfileSettingsPage() {
     setError(null);
     setSaved(false);
     try {
-      const data = await api.updateProfile({ name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim() });
-      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '' };
+      const data = await api.updateProfile({ name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(), about: form.about.trim() });
+      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '', about: data.user.profile?.about ?? '' };
       updateUser(data.user);
       setForm(next);
       setSavedForm(next);
@@ -124,8 +126,8 @@ export function ProfileSettingsPage() {
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-5 py-6 md:px-10 md:py-8 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,.85fr)]">
-        <form onSubmit={onSubmit} className="rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(76,29,149,.08)] md:p-7">
+      <div className="mx-auto grid max-w-6xl items-start gap-6 px-5 py-6 md:px-10 md:py-8 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,.85fr)]">
+        <form onSubmit={onSubmit} className="self-start rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(76,29,149,.08)] md:p-7">
           <div className="flex gap-8 border-b border-slate-100">
             <button type="button" onClick={() => setTab('personal')} className={`border-b-2 px-1 pb-4 text-sm font-semibold ${tab === 'personal' ? 'border-violet-600 text-violet-700' : 'border-transparent text-slate-500'}`}><UserIcon /> <span className="ml-2 align-middle">Personal information</span></button>
             <button type="button" onClick={() => setTab('security')} className={`border-b-2 px-1 pb-4 text-sm font-semibold ${tab === 'security' ? 'border-violet-600 text-violet-700' : 'border-transparent text-slate-500'}`}><LockIcon /> <span className="ml-2 align-middle">Account &amp; security</span></button>
@@ -140,6 +142,7 @@ export function ProfileSettingsPage() {
                 <label className="block text-sm font-semibold text-slate-900"><span className="mb-2 flex items-center gap-2"><Icon><UserIcon /></Icon>Display name</span><input className="sv-input" value={form.name} onChange={(e) => setField('name', e.target.value)} required minLength={2} maxLength={100} autoComplete="name" /><small className="mt-2 block font-normal text-slate-500">This is how your name appears across SkillVentures.</small></label>
                 <label className="block text-sm font-semibold text-slate-900"><span className="mb-2 flex items-center gap-2"><Icon><MailIcon /></Icon>Email address</span><input className="sv-input" type="email" value={form.email} onChange={(e) => setField('email', e.target.value)} required autoComplete="email" /><small className="mt-2 block font-normal text-slate-500">We’ll never share your email with anyone else.</small></label>
                 <label className="block text-sm font-semibold text-slate-900 md:col-span-2"><span className="mb-2 flex items-center gap-2"><Icon><PhoneIcon /></Icon>Mobile number</span><input className="sv-input" type="tel" value={form.phone} onChange={(e) => setField('phone', e.target.value)} placeholder="e.g. 9876543210" autoComplete="tel" inputMode="tel" /><small className="mt-2 block font-normal text-slate-500">Used for important updates and account recovery.</small></label>
+                <label className="block text-sm font-semibold text-slate-900 md:col-span-2"><span className="mb-2 flex items-center gap-2"><Icon><i className="fas fa-align-left" aria-hidden /></Icon>About you</span><textarea className="sv-input min-h-32 resize-y" value={form.about} onChange={(e) => setField('about', e.target.value.slice(0, 500))} placeholder="Tell institutions what you are learning, what interests you, or what opportunity you are looking for…" maxLength={500} /><span className="mt-2 flex justify-between text-xs font-normal text-slate-500"><span>A short introduction shown on your learner profile.</span><span>{form.about.length}/500</span></span></label>
               </div>
               <div className="sv-profile-secure mt-7 flex items-center gap-4 rounded-2xl p-4"><span className="rounded-xl bg-violet-600 p-3 text-white"><LockIcon /></span><div><p className="font-bold text-violet-700">Your information is secure</p><p className="mt-1 text-sm text-slate-600">We use industry-standard encryption to protect your data.</p></div></div>
               {error ? <p className="mt-5 rounded-lg bg-spark-soft px-3 py-2 text-sm font-semibold text-[#b45309]" role="alert">{error}</p> : null}
@@ -149,10 +152,10 @@ export function ProfileSettingsPage() {
           )}
         </form>
 
-        <aside className="space-y-5">
-          <div className="overflow-hidden rounded-2xl border border-violet-100 bg-white text-center shadow-[0_8px_30px_rgba(76,29,149,.08)]"><div className="h-16 bg-gradient-to-r from-indigo-800 via-violet-700 to-purple-600" /><div className="-mt-12 flex justify-center"><div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-violet-600 text-2xl font-bold text-white shadow-lg">{initials}</div></div><h2 className="mt-3 font-display text-xl font-bold text-slate-900">{form.name || 'Your name'}</h2><span className="mt-2 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-bold capitalize text-violet-700">{role}</span><p className="mx-auto mt-4 max-w-xs px-4 text-sm leading-6 text-slate-500">Passionate about learning and building real-world solutions.</p><div className="mt-5 grid grid-cols-4 border-t border-slate-100 py-5 text-xs text-slate-500"><Stat value="0" label="Courses" /><Stat value="0" label="Bootcamps" /><Stat value="0" label="Hackathons" /><Stat value="0" label="Badges" /></div></div>
-          <div className="rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(76,29,149,.08)]"><h3 className="font-bold text-slate-900">💡 &nbsp;Profile tips</h3><Tip done>Add a profile picture to stand out</Tip><Tip done>Write a short bio about yourself</Tip><Tip>Link your social profiles</Tip><Tip>Add your skills and interests</Tip></div>
-          <div className="rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(76,29,149,.08)]"><h3 className="font-bold text-slate-900">Need help?</h3><p className="mt-2 text-sm leading-6 text-slate-500">If you face any issues, our support team is here to help.</p><button type="button" className="sv-btn-ghost mt-4 text-sm" onClick={() => navigate('/contact')}>Contact support</button></div>
+        <aside className="space-y-5 lg:sticky lg:top-24">
+          <div className="overflow-hidden rounded-2xl border border-violet-100 bg-white text-center shadow-[0_8px_30px_rgba(76,29,149,.08)]"><div className="h-16 bg-gradient-to-r from-indigo-800 via-violet-700 to-purple-600" /><div className="-mt-12 flex justify-center"><div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-violet-600 text-2xl font-bold text-white shadow-lg">{user?.profile?.avatar ? <img src={user.profile.avatar} alt="" className="h-full w-full object-cover" /> : initials}</div></div><h2 className="mt-3 font-display text-xl font-bold text-slate-900">{form.name || 'Your name'}</h2><span className="mt-2 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-bold capitalize text-violet-700">{role}</span><p className="mx-auto mt-4 max-w-xs px-4 text-sm leading-6 text-slate-500">Your learning identity, kept ready for every opportunity.</p><div className="px-6 pt-5 text-left"><div className="flex items-center justify-between text-xs font-bold text-slate-600"><span>Profile completion</span><span className="text-violet-700">{profileCompletion}%</span></div><div className="sv-profile-progress mt-2"><span style={{ width: `${profileCompletion}%` }} /></div></div><Link to="/profile/view" className="mt-4 inline-flex text-sm font-bold text-violet-700 hover:underline">View profile <i className="fas fa-arrow-right ml-2" aria-hidden /></Link><div className="mt-5 grid grid-cols-4 border-t border-slate-100 py-5 text-xs text-slate-500"><Stat value="0" label="Courses" /><Stat value="0" label="Bootcamps" /><Stat value="0" label="Hackathons" /><Stat value="0" label="Badges" /></div></div>
+          <div className="rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(76,29,149,.08)]"><h3 className="flex items-center gap-2 font-bold text-slate-900"><i className="fas fa-lightbulb text-orange-500" aria-hidden />Profile tips</h3><Tip done={Boolean(user?.profile?.avatar)}>Add a profile picture to stand out</Tip><Tip done={Boolean(form.about)}>Write a short bio about yourself</Tip><Tip>Link your social profiles</Tip><Tip>Add your skills and interests</Tip></div>
+          <div className="rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(76,29,149,.08)]"><h3 className="flex items-center gap-2 font-bold text-slate-900"><i className="fas fa-circle-question text-violet-600" aria-hidden />Need help?</h3><p className="mt-2 text-sm leading-6 text-slate-500">If you face any issues, our support team is here to help.</p><button type="button" className="sv-btn-ghost mt-4 text-sm" onClick={() => navigate('/contact')}><i className="fas fa-headset" aria-hidden />Contact support</button></div>
         </aside>
       </div>
     </MarketplaceShell>
@@ -160,4 +163,4 @@ export function ProfileSettingsPage() {
 }
 
 function Stat({ value, label }: { value: string; label: string }) { return <div><strong className="block text-sm text-slate-900">{value}</strong><span className="mt-1 block">{label}</span></div>; }
-function Tip({ done = false, children }: { done?: boolean; children: ReactNode }) { return <p className="mt-3 flex items-center gap-2 text-sm text-slate-600"><span className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${done ? 'bg-emerald-500 text-white' : 'border border-slate-300 text-transparent'}`}>✓</span>{children}</p>; }
+function Tip({ done = false, children }: { done?: boolean; children: ReactNode }) { return <p className="mt-3 flex items-center gap-2 text-sm text-slate-600"><span className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${done ? 'bg-emerald-500 text-white' : 'border border-slate-300 text-transparent'}`}><i className="fas fa-check" aria-hidden /></span>{children}</p>; }

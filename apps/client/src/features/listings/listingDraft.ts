@@ -11,6 +11,7 @@ export type ListingDraft = {
   durationUnit: 'days' | 'weeks' | 'months' | 'hours';
   city: string;
   state: string;
+  address: string;
   eligibility?: string;
   placementSupport: boolean;
   certificateProvided: boolean;
@@ -38,6 +39,7 @@ export const EMPTY_LISTING_DRAFT: ListingDraft = {
   durationUnit: 'weeks',
   city: '',
   state: '',
+  address: '',
   placementSupport: false,
   certificateProvided: false,
   coverUrl: null,
@@ -60,6 +62,7 @@ export function listingToDraft(listing: ListingSummary, institutionName: string)
     durationUnit: listing.duration.unit,
     city: listing.location?.city ?? '',
     state: listing.location?.state ?? '',
+    address: listing.location?.address ?? '',
     eligibility: listing.eligibility ?? '',
     placementSupport: listing.placementSupport,
     certificateProvided: listing.certificateProvided,
@@ -99,6 +102,7 @@ export function buildListingPayload(
     location: {
       city: draft.city.trim() || undefined,
       state: draft.state.trim() || undefined,
+      address: draft.address.trim() || undefined,
     },
     eligibility: draft.eligibility?.trim() || undefined,
     placementSupport: draft.placementSupport,

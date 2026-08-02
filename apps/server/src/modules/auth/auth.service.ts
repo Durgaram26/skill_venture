@@ -30,6 +30,7 @@ function toAuthUser(user: UserDocument): AuthUser {
     profile: user.profile
       ? {
           avatar: user.profile.avatar ?? undefined,
+          about: user.profile.about ?? undefined,
           city: user.profile.city ?? undefined,
           currentEducationLevel: user.profile.currentEducationLevel ?? undefined,
         }
@@ -211,6 +212,10 @@ export async function updateProfile(userId: string, input: UpdateProfileInput) {
   if (input.name !== undefined) user.name = input.name;
   if (input.phone !== undefined) {
     user.phone = input.phone.trim() ? input.phone.trim() : undefined;
+  }
+  if (input.about !== undefined) {
+    user.profile = user.profile ?? {};
+    user.profile.about = input.about.trim() || undefined;
   }
 
   await user.save();

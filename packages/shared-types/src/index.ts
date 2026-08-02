@@ -49,6 +49,7 @@ export interface AuthUser {
   isBanned: boolean;
   profile?: {
     avatar?: string;
+    about?: string;
     city?: string;
     currentEducationLevel?: string;
   };

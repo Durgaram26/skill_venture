@@ -29,6 +29,7 @@ import { ComparePage } from './pages/ComparePage';
 import { InstitutionBillingPage } from './pages/InstitutionBillingPage';
 import { InstitutionAnalyticsPage } from './pages/InstitutionAnalyticsPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage';
+import { ProfilePage } from './pages/ProfilePage';
 // Student payments are temporarily disabled; keep the page for a future payments release.
 // import { StudentPaymentsPage } from './pages/StudentPaymentsPage';
 
@@ -86,6 +87,7 @@ export function App() {
       {/* Student payments are temporarily disabled; restore this route when payments launch. */}
       {/* <Route path="/student/payments" element={<StudentPaymentsPage />} /> */}
       <Route path="/profile" element={<ProfileSettingsPage />} />
+      <Route path="/profile/view" element={<ProfilePage />} />
       <Route path="/admin" element={<AdminOverviewPage />} />
       <Route path="/admin/institutions" element={<AdminInstitutionsPage />} />
       <Route path="/admin/listings" element={<AdminListingsPage />} />
