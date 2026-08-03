@@ -55,23 +55,14 @@ body {
   font-size: 0.8125rem;
   line-height: 1.4;
 }
-.sv-brand-mark {
-  display: block;
-  width: 2rem;
-  height: 2rem;
-  object-fit: cover;
-  object-position: center;
-}
 .sv-wordmark { display: inline-flex; flex-direction: column; gap: 0.12rem; line-height: 1; }
 .sv-wordmark-name { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; font-size: 1.45rem; font-weight: 850; letter-spacing: -0.045em; }
-.sv-wordmark-name .sv-brand-mark { width: 2rem; height: 2rem; }
 .sv-wordmark-skill { color: #102d80; }
 .sv-wordmark-skill--dark { color: #ffffff; }
 .sv-wordmark-ventures { color: #f36b16; }
 .sv-wordmark-tagline { display: flex; align-items: center; justify-content: center; gap: 0.4rem; color: #29313f; font-size: 0.46rem; font-weight: 800; letter-spacing: 0.25em; }
 .sv-wordmark-tagline i { display: inline-block; width: 1.8rem; border-top: 2px solid #102d80; }
 .sv-wordmark-tagline b { color: #f36b16; font-size: 0.7rem; }
-.sv-wordmark--compact .sv-brand-mark { width: 1.9rem; height: 1.9rem; }
 .sv-wordmark--compact .sv-wordmark-name { font-size: 1.4rem; }
 .sv-brand-inline { color: #102d80; white-space: nowrap; }
 .sv-brand-inline span { color: #f36b16; }
