@@ -112,28 +112,7 @@ export function MarketplaceShell({
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const listingType = new URLSearchParams(location.search).get('type');
 
-  const mobileLinks: { to: string; label: string; end?: boolean }[] = [
-    { to: '/listings', label: 'Explore' },
-    // Compare is intentionally hidden for now; the route remains available for later.
-  ];
-  if (user?.role === 'student') {
-    mobileLinks.push(
-      { to: '/student/enquiries', label: 'My learning' },
-      { to: '/student/bookmarks', label: 'Saved' },
-    );
-  }
-  if (user?.role === 'institution') {
-    mobileLinks.push(
-      { to: '/institution', label: 'Instructor hub' },
-      { to: '/institution/billing', label: 'Billing' },
-    );
-  }
-  if (isAdmin) {
-    mobileLinks.push({ to: '/admin', label: 'Admin panel' });
-  }
-  if (!user) {
-    mobileLinks.push({ to: '/login', label: 'Login' });
-  }
+  // mobileLinks removed — menu now uses rich card-based layout below
 
   return (
     <div className={`sv-app-shell min-h-screen bg-chalk text-ink ${location.pathname === '/' ? 'sv-home-shell' : ''}`} data-header-surface={headerSurface}>
@@ -166,61 +145,64 @@ export function MarketplaceShell({
             <div className="flex-1" />
           )}
 
-          <nav className="sv-nav-rail ml-auto hidden lg:inline-flex" aria-label="Primary">
-            <NavLink to="/" end className={location.pathname === '/' ? 'is-active' : undefined}>
-              <i className="fas fa-home" aria-hidden />
-              Home
-            </NavLink>
-            <Link
-              to="/listings?type=course"
-              className={location.pathname === '/listings' && listingType === 'course' ? 'is-active' : undefined}
-            >
-              <i className="fas fa-book-open" aria-hidden />
-              Courses
-            </Link>
-            <Link
-              to="/listings?type=bootcamp"
-              className={location.pathname === '/listings' && listingType === 'bootcamp' ? 'is-active' : undefined}
-            >
-              <i className="fas fa-fire" aria-hidden />
-              Bootcamps
-            </Link>
-            <Link
-              to="/listings?type=hackathon"
-              className={location.pathname === '/listings' && listingType === 'hackathon' ? 'is-active' : undefined}
-            >
-              <i className="fas fa-trophy" aria-hidden />
-              Hackathons
-            </Link>
-            {user?.role === 'institution' ? (
-              <NavLink to="/institution" className={navClass}>
-                <i className="fas fa-layer-group" aria-hidden />
-                Hub
+          {/* Desktop nav — wrapped in plain div so hidden/lg:flex works without being overridden by .sv-nav-rail { display: inline-flex } */}
+          <div className="ml-auto hidden lg:flex items-center">
+            <nav className="sv-nav-rail" aria-label="Primary">
+              <NavLink to="/" end className={location.pathname === '/' ? 'is-active' : undefined}>
+                <i className="fas fa-home" aria-hidden />
+                Home
               </NavLink>
-            ) : null}
-            {user?.role === 'student' ? (
-              <>
-                <NavLink to="/student/enquiries" className={navClass}>
-                  <IconBook />
-                  My learning
+              <Link
+                to="/listings?type=course"
+                className={location.pathname === '/listings' && listingType === 'course' ? 'is-active' : undefined}
+              >
+                <i className="fas fa-book-open" aria-hidden />
+                Courses
+              </Link>
+              <Link
+                to="/listings?type=bootcamp"
+                className={location.pathname === '/listings' && listingType === 'bootcamp' ? 'is-active' : undefined}
+              >
+                <i className="fas fa-fire" aria-hidden />
+                Bootcamps
+              </Link>
+              <Link
+                to="/listings?type=hackathon"
+                className={location.pathname === '/listings' && listingType === 'hackathon' ? 'is-active' : undefined}
+              >
+                <i className="fas fa-trophy" aria-hidden />
+                Hackathons
+              </Link>
+              {user?.role === 'institution' ? (
+                <NavLink to="/institution" className={navClass}>
+                  <i className="fas fa-layer-group" aria-hidden />
+                  Hub
                 </NavLink>
-                {/* Student payments are temporarily disabled; keep this route for future use. */}
-                <NavLink to="/student/bookmarks" className={navClass}>
-                  <IconBookmark />
-                  Saved
+              ) : null}
+              {user?.role === 'student' ? (
+                <>
+                  <NavLink to="/student/enquiries" className={navClass}>
+                    <IconBook />
+                    My learning
+                  </NavLink>
+                  {/* Student payments are temporarily disabled; keep this route for future use. */}
+                  <NavLink to="/student/bookmarks" className={navClass}>
+                    <IconBookmark />
+                    Saved
+                  </NavLink>
+                </>
+              ) : null}
+              {isAdmin ? (
+                <NavLink to="/admin" className={navClass}>
+                  <IconShield />
+                  Admin
                 </NavLink>
-              </>
-            ) : null}
-            {isAdmin ? (
-              <NavLink to="/admin" className={navClass}>
-                <IconShield />
-                Admin
-              </NavLink>
-            ) : null}
-            {user ? <UserProfileMenu dark={dark} /> : null}
-          </nav>
+              ) : null}
+              {user ? <UserProfileMenu dark={dark} /> : null}
+            </nav>
+          </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             {!user ? (
               <>
                 <Link
@@ -235,57 +217,138 @@ export function MarketplaceShell({
                 </Link>
               </>
             ) : null}
-            <button
-              type="button"
-              className={
-                dark
-                  ? 'inline-flex items-center justify-center rounded-md border border-white/25 px-3 py-2 text-white lg:hidden'
-                  : 'sv-btn-ghost lg:hidden'
-              }
-              aria-label="Menu"
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((v) => !v)}
-            >
-              {menuOpen ? '✕' : '☰'}
-            </button>
+            <div className="lg:hidden">
+              <button
+                type="button"
+                className={`sv-mobile-hamburger${menuOpen ? ' is-open' : ''}${dark ? ' dark' : ''}`}
+                aria-label="Menu"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((v) => !v)}
+              >
+                <span /><span /><span />
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* ── Premium Mobile Menu (DNA: ripple-reveal, icon cards, tactile CTA) ── */}
         <div
-          className={`sv-ripple-menu absolute inset-x-0 top-full z-30 border-b px-4 py-5 lg:hidden ${
-            menuOpen ? 'is-open' : ''
-          } ${dark ? 'border-white/10 bg-void text-white' : 'border-line bg-paper text-ink'}`}
+          className={`sv-ripple-menu absolute inset-x-0 top-full z-30 lg:hidden${menuOpen ? ' is-open' : ''}`}
         >
-          {user ? (
-            <UserProfileMenu
-              dark={dark}
-              variant="mobile"
-              onNavigate={() => setMenuOpen(false)}
-            />
-          ) : null}
-          {!hideSearch ? (
-            <SearchAutocomplete
-              value={q}
-              onChange={setQ}
-              onSubmit={onSearch}
-              dark={dark}
-              className="mb-4 max-w-none"
-              placeholder="Search programs…"
-            />
-          ) : null}
-          <div className="sv-mobile-nav-list">
-            {mobileLinks.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={navClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                <span>{item.label}</span>
-                <IconChevron className="h-4 w-4 opacity-50" />
-              </NavLink>
-            ))}
+          <div className={`sv-mobile-menu-inner${dark ? ' dark' : ''}`}>
+
+            {/* Search */}
+            {!hideSearch ? (
+              <div className="sv-mm-search">
+                <SearchAutocomplete
+                  value={q}
+                  onChange={setQ}
+                  onSubmit={onSearch}
+                  dark={dark}
+                  className="max-w-none"
+                  placeholder="Search programs…"
+                />
+              </div>
+            ) : null}
+
+            {/* Logged-in profile strip */}
+            {user ? (
+              <div className="sv-mm-section">
+                <UserProfileMenu dark={dark} variant="mobile" onNavigate={() => setMenuOpen(false)} />
+              </div>
+            ) : null}
+
+            {/* Browse cards */}
+            <div className="sv-mm-section">
+              <p className="sv-mm-label">Browse</p>
+              <div className="sv-mm-grid">
+                <NavLink to="/" end className="sv-mm-card" onClick={() => setMenuOpen(false)}>
+                  <span className="sv-mm-icon" style={{ background: 'linear-gradient(135deg,#1455d9,#3b82f6)' }}>
+                    <i className="fas fa-home" />
+                  </span>
+                  <span className="sv-mm-card-text"><strong>Home</strong><small>Back to start</small></span>
+                  <IconChevron className="sv-mm-chevron" />
+                </NavLink>
+
+                <Link to="/listings?type=course" className="sv-mm-card" onClick={() => setMenuOpen(false)}>
+                  <span className="sv-mm-icon" style={{ background: 'linear-gradient(135deg,#7c3aed,#a78bfa)' }}>
+                    <i className="fas fa-book-open" />
+                  </span>
+                  <span className="sv-mm-card-text"><strong>Courses</strong><small>Learn at your pace</small></span>
+                  <IconChevron className="sv-mm-chevron" />
+                </Link>
+
+                <Link to="/listings?type=bootcamp" className="sv-mm-card" onClick={() => setMenuOpen(false)}>
+                  <span className="sv-mm-icon" style={{ background: 'linear-gradient(135deg,#ea580c,#f97316)' }}>
+                    <i className="fas fa-fire" />
+                  </span>
+                  <span className="sv-mm-card-text"><strong>Bootcamps</strong><small>Live intensive training</small></span>
+                  <IconChevron className="sv-mm-chevron" />
+                </Link>
+
+                <Link to="/listings?type=hackathon" className="sv-mm-card" onClick={() => setMenuOpen(false)}>
+                  <span className="sv-mm-icon" style={{ background: 'linear-gradient(135deg,#d97706,#fbbf24)' }}>
+                    <i className="fas fa-trophy" />
+                  </span>
+                  <span className="sv-mm-card-text"><strong>Hackathons</strong><small>Compete &amp; win prizes</small></span>
+                  <IconChevron className="sv-mm-chevron" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Student account links */}
+            {user?.role === 'student' ? (
+              <div className="sv-mm-section">
+                <p className="sv-mm-label">My Account</p>
+                <div className="sv-mm-list">
+                  <NavLink to="/student/enquiries" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
+                    <IconBook className="sv-mm-row-icon" /><span>My Learning</span><IconChevron className="sv-mm-chevron" />
+                  </NavLink>
+                  <NavLink to="/student/bookmarks" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
+                    <IconBookmark className="sv-mm-row-icon" /><span>Saved</span><IconChevron className="sv-mm-chevron" />
+                  </NavLink>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Institution links */}
+            {user?.role === 'institution' ? (
+              <div className="sv-mm-section">
+                <p className="sv-mm-label">Instructor</p>
+                <div className="sv-mm-list">
+                  <NavLink to="/institution" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
+                    <i className="fas fa-layer-group sv-mm-row-icon" /><span>Instructor Hub</span><IconChevron className="sv-mm-chevron" />
+                  </NavLink>
+                  <NavLink to="/institution/billing" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
+                    <i className="fas fa-credit-card sv-mm-row-icon" /><span>Billing</span><IconChevron className="sv-mm-chevron" />
+                  </NavLink>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Admin link */}
+            {isAdmin ? (
+              <div className="sv-mm-section">
+                <div className="sv-mm-list">
+                  <NavLink to="/admin" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
+                    <IconShield className="sv-mm-row-icon" /><span>Admin Panel</span><IconChevron className="sv-mm-chevron" />
+                  </NavLink>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Guest CTA */}
+            {!user ? (
+              <div className="sv-mm-cta">
+                <Link to="/login" className="sv-mm-cta-login" onClick={() => setMenuOpen(false)}>
+                  <i className="fas fa-sign-in-alt" /> Login
+                </Link>
+                <Link to="/register" className="sv-mm-cta-register" onClick={() => setMenuOpen(false)}>
+                  <i className="fas fa-rocket" /> Get Started Free
+                </Link>
+              </div>
+            ) : null}
+
           </div>
         </div>
       </header>

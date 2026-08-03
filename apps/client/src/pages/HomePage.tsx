@@ -47,9 +47,9 @@ export function HomePage() {
       <div className="sv-mock sv-home-theme bg-white">
       {/* Hero */}
       <section className="sv-home-hero">
-        <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-12 md:grid-cols-[.92fr_1.08fr] md:px-10 md:py-16">
+        <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 py-10 sm:px-6 md:grid-cols-[.92fr_1.08fr] md:px-10 md:py-16">
           <div>
-            <h1 className="font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-slate-950 md:text-5xl">
+            <h1 className="font-display text-3xl font-extrabold leading-[1.08] tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
               Launch Your<br /><span className="text-orange-500">SkillVentures</span> Journey
             </h1>
             <p className="mt-5 max-w-lg text-sm leading-6 text-slate-600 md:text-base">
@@ -124,7 +124,7 @@ export function HomePage() {
             linkLabel="View All Hackathons"
             linkColor="text-yellow-400 hover:text-yellow-300"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
             {hackathons.length === 0 ? (
               <p className="text-gray-400">No hackathons listed yet.</p>
             ) : (
@@ -137,13 +137,13 @@ export function HomePage() {
       {/* Testimonials */}
       <section className="py-16 bg-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 section-title">What Our Students Say</h2>
-            <p className="text-gray-600 mt-8 max-w-3xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 section-title">What Our Students Say</h2>
+            <p className="text-gray-600 mt-4 sm:mt-8 max-w-3xl mx-auto text-sm sm:text-base">
               Join thousands of successful learners who transformed their careers with SkillVentures
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-8">
             <Testimonial
               img="https://randomuser.me/api/portraits/women/32.jpg"
               name="Priya Sharma"
@@ -166,19 +166,18 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="sv-home-cta py-16 bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
+      <section className="sv-home-cta py-10 sm:py-16 bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
         <div className="relative mx-auto max-w-[1580px] px-4 sm:px-8 lg:px-12 text-center">
           <div className="sv-cta-rocket"><img src="/images/home-rocket.png" alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} /></div>
-          <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Career?</h2>
-          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Ready to Transform Your Career?</h2>
+          <p className="text-base sm:text-xl text-purple-100 mb-6 sm:mb-8 max-w-2xl mx-auto">
             Join thousands of learners who have already started their journey with SkillVentures
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/listings" className="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-purple-50 transition-colors text-lg">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+            <Link to="/listings" className="bg-white text-purple-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold hover:bg-purple-50 transition-colors text-base sm:text-lg">
               <i className="fas fa-book-open mr-2" />Start Learning
             </Link>
-            <Link to="/listings?type=hackathon" className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors text-lg">
+            <Link to="/listings?type=hackathon" className="bg-transparent border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors text-base sm:text-lg">
               <i className="fas fa-trophy mr-2" />Join Competition
             </Link>
           </div>
@@ -186,9 +185,9 @@ export function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gray-900 text-white py-10 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             <div>
               <div className="mb-4"><BrandWordmark compact onDark /></div>
               <p className="text-gray-400">
@@ -247,15 +246,15 @@ function SectionHead({
   linkColor: string;
 }) {
   return (
-    <div className="flex justify-between items-center mb-12">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-8 sm:mb-12">
       <div>
-        <h2 className={`text-3xl font-bold ${titleColor} section-title`}>
+        <h2 className={`text-2xl sm:text-3xl font-bold ${titleColor} section-title`}>
           <i className={`fas ${icon} ${iconColor} mr-3`} aria-hidden="true" />
           {title}
         </h2>
-        <p className={`${subColor} mt-8`}>{sub}</p>
+        <p className={`${subColor} mt-4 sm:mt-8 text-sm sm:text-base`}>{sub}</p>
       </div>
-      <Link to={linkTo} className={`${linkColor} font-medium flex items-center`}>
+      <Link to={linkTo} className={`${linkColor} font-medium flex items-center text-sm sm:text-base shrink-0`}>
         {linkLabel} <i className="fas fa-arrow-right ml-2" />
       </Link>
     </div>
@@ -273,7 +272,7 @@ function Grid({
   children: React.ReactNode;
 }) {
   if (items.length === 0) return <p className="text-gray-500">{empty}</p>;
-  return <div className="grid grid-cols-1 md:grid-cols-3 gap-8">{children}</div>;
+  return <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-8">{children}</div>;
 }
 
 function CoverImage({ listing, className }: { listing: ListingSummary; className: string }) {

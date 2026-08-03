@@ -1,10 +1,68 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { ListingSummary } from '@skillventures/shared-types';
 import { MarketplaceShell } from '../components/AppShell';
 import { ListingCard } from '../components/ListingCard';
 import { api, ApiError } from '../lib/api';
 import { useCompareStore } from '../features/compare/compareStore';
+
+const PRICE_MAX = 50000;
+
+const SORT_OPTIONS = [
+  { value: 'featured', label: 'Featured first' },
+  { value: 'newest',   label: 'Newest first' },
+  { value: 'price-asc',  label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'rating',   label: 'Highest rated' },
+] as const;
+
+type SortValue = typeof SORT_OPTIONS[number]['value'];
+
+function formatINR(n: number) {
+  if (n >= PRICE_MAX) return '₹50k+';
+  if (n === 0) return 'Free';
+  return `₹${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k`;
+}
+
+/* ── Dual-handle price range slider ── */
+function PriceRangeSlider({
+  min = 0, max = PRICE_MAX, step = 500,
+  value, onChange,
+}: {
+  min?: number; max?: number; step?: number;
+  value: [number, number];
+  onChange: (v: [number, number]) => void;
+}) {
+  const [lo, hi] = value;
+  const pctLo = ((lo - min) / (max - min)) * 100;
+  const pctHi = ((hi - min) / (max - min)) * 100;
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div className="sv-price-slider">
+      <div className="sv-price-track" ref={trackRef}>
+        <div
+          className="sv-price-fill"
+          style={{ left: `${pctLo}%`, right: `${100 - pctHi}%` }}
+        />
+      </div>
+      {/* Min thumb */}
+      <input
+        type="range" min={min} max={max} step={step} value={lo}
+        className="sv-price-input"
+        onChange={e => onChange([Math.min(+e.target.value, hi - step), hi])}
+        aria-label="Minimum price"
+      />
+      {/* Max thumb */}
+      <input
+        type="range" min={min} max={max} step={step} value={hi}
+        className="sv-price-input"
+        onChange={e => onChange([lo, Math.max(+e.target.value, lo + step)])}
+        aria-label="Maximum price"
+      />
+    </div>
+  );
+}
 
 const TYPES = [
   { value: '', label: 'All programs' },
@@ -38,6 +96,8 @@ export function ListingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SortValue>('featured');
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, PRICE_MAX]);
   const toggleCompare = useCompareStore((s) => s.toggle);
   const hasCompare = useCompareStore((s) => s.has);
   const clearCompare = useCompareStore((s) => s.clear);
@@ -181,6 +241,21 @@ export function ListingsPage() {
 
   const filterPanel = (
     <>
+      {/* Sort by */}
+      <div className="sv-filter-section">
+        <label className="sv-filter-label" htmlFor="explore-sort">Sort by</label>
+        <select
+          id="explore-sort"
+          className="sv-filter-select"
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value as SortValue)}
+        >
+          {SORT_OPTIONS.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="sv-filter-section">
         <label className="sv-filter-label" htmlFor="explore-keyword">
           Search
@@ -278,6 +353,16 @@ export function ListingsPage() {
         </datalist>
       </div>
 
+      {/* Price range */}
+      <div className="sv-filter-section">
+        <div className="sv-filter-label">Price range</div>
+        <div className="sv-price-range-labels">
+          <span>{formatINR(priceRange[0])}</span>
+          <span>{formatINR(priceRange[1])}</span>
+        </div>
+        <PriceRangeSlider value={priceRange} onChange={setPriceRange} />
+      </div>
+
       <div className="sv-filter-section">
         <div className="sv-toggle-row">
           <div>
@@ -305,9 +390,22 @@ export function ListingsPage() {
     </>
   );
 
-  useEffect(() => {
-    if (activeFilters.length > 0) setFiltersOpen(true);
-  }, [activeFilters.length]);
+
+  /* ── Sort + price-range applied client-side ── */
+  const displayItems = (() => {
+    let out = items.filter(item => {
+      const fee = item.fee.isFree ? 0 : item.fee.amount;
+      return fee >= priceRange[0] && (priceRange[1] >= PRICE_MAX || fee <= priceRange[1]);
+    });
+    switch (sortBy) {
+      case 'newest':     out = [...out].sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()); break;
+      case 'price-asc':  out = [...out].sort((a, b) => (a.fee.isFree ? 0 : a.fee.amount) - (b.fee.isFree ? 0 : b.fee.amount)); break;
+      case 'price-desc': out = [...out].sort((a, b) => (b.fee.isFree ? 0 : b.fee.amount) - (a.fee.isFree ? 0 : a.fee.amount)); break;
+      case 'rating':     out = [...out].sort((a, b) => b.rating.avg - a.rating.avg); break;
+      default: break; // 'featured' — keep API order
+    }
+    return out;
+  })();
 
   const showFilterSidebar = filtersOpen;
 
@@ -359,69 +457,12 @@ export function ListingsPage() {
         ) : null}
 
         <div className={compareCount > 0 ? 'pb-32' : undefined}>
-          {!filtersOpen ? (
-            <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <label className="sv-filter-label" htmlFor="explore-type-quick">
-                  Type
-                </label>
-                <select
-                  id="explore-type-quick"
-                  className="sv-filter-select"
-                  value={type}
-                  onChange={(e) => setFilter('type', e.target.value)}
-                >
-                  {TYPES.map((t) => (
-                    <option key={t.value || 'all'} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="sv-filter-label" htmlFor="explore-mode-quick">
-                  Mode
-                </label>
-                <select
-                  id="explore-mode-quick"
-                  className="sv-filter-select"
-                  value={mode}
-                  onChange={(e) => setFilter('mode', e.target.value)}
-                >
-                  {MODES.map((m) => (
-                    <option key={m.value || 'any'} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="hidden sm:block">
-                <label className="sv-filter-label" htmlFor="explore-category-quick">
-                  Category
-                </label>
-                <select
-                  id="explore-category-quick"
-                  className="sv-filter-select"
-                  value={category}
-                  onChange={(e) => setFilter('category', e.target.value)}
-                >
-                  <option value="">All categories</option>
-                  {CATEGORIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          ) : null}
-
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="font-display text-lg font-bold tracking-tight text-ink">
                 {loading
                   ? 'Finding programs…'
-                  : `${items.length} program${items.length === 1 ? '' : 's'}`}
+                  : `${displayItems.length} program${displayItems.length === 1 ? '' : 's'}`}
               </p>
               <p className="text-xs text-mute">
                 {activeFilters.length > 0
@@ -462,7 +503,7 @@ export function ListingsPage() {
             </p>
           ) : null}
 
-          {!loading && !error && items.length === 0 ? (
+          {!loading && !error && displayItems.length === 0 ? (
             <div className="sv-ticket animate-course-in rounded-md p-10 text-center">
               <img
                 src="/images/empty-listings.svg"
@@ -497,12 +538,12 @@ export function ListingsPage() {
                 </div>
               ))}
             </div>
-          ) : items.length > 0 ? (
+          ) : displayItems.length > 0 ? (
             <div
-              key={`${q}|${type}|${mode}|${city}|${category}|${freeOnly}`}
+              key={`${q}|${type}|${mode}|${city}|${category}|${freeOnly}|${sortBy}|${priceRange}`}
               className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3"
             >
-              {items.map((item, i) => (
+              {displayItems.map((item, i) => (
                 <ListingCard
                   key={item.id}
                   listing={item}

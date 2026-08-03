@@ -138,7 +138,7 @@ export function AdminOverviewPage() {
             Full analytics →
           </Link>
         </div>
-        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
           {STAT_LINKS.map((stat) => {
             const value = analytics?.[stat.key];
             const inner = (
