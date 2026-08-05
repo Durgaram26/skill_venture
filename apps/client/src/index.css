@@ -118,6 +118,9 @@ body {
 .sv-profile-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #1455d9, #f36b16); transition: width .35s ease; }
 .sv-profile-chip { display: inline-flex; align-items: center; gap: .4rem; border: 1px solid #e0e7ff; border-radius: 999px; background: #f8faff; padding: .45rem .7rem; color: #53627c; font-size: .72rem; font-weight: 700; }
 .sv-profile-chip i { color: #1455d9; }
+.sv-share > summary::-webkit-details-marker { display: none; }
+.sv-share-item { display: flex; align-items: center; gap: .6rem; border-radius: .75rem; padding: .6rem .7rem; color: #1e293b; font-size: .85rem; font-weight: 600; text-align: left; }
+.sv-share-item:hover { background: #f4f6fb; }
 .sv-profile-activity-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #eef1f7; padding: .8rem 0; color: #1e293b; }
 .sv-profile-activity-row:last-child { border-bottom: 0; }
 .sv-profile-activity-row:hover strong { color: #1455d9; }

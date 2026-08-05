@@ -90,14 +90,16 @@ export function ProfilePage() {
 function ShareProfileButton({ userId, name, isOwn }: { userId: string; name: string; isOwn: boolean }) {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
   const url = `${window.location.origin}/u/${userId}`;
+  const text = isOwn ? `Here is my SkillVentures profile: ${url}` : `${name} on SkillVentures: ${url}`;
+  const targets = [
+    { label: 'WhatsApp', icon: 'fa-brands fa-whatsapp', color: 'text-[#25d366]', href: `https://wa.me/?text=${encodeURIComponent(text)}` },
+    { label: 'LinkedIn', icon: 'fa-brands fa-linkedin', color: 'text-[#0a66c2]', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
+    { label: 'X', icon: 'fa-brands fa-x-twitter', color: 'text-slate-900', href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}` },
+    { label: 'Facebook', icon: 'fa-brands fa-facebook', color: 'text-[#1877f2]', href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
+    { label: 'Email', icon: 'fas fa-envelope', color: 'text-slate-500', href: `mailto:?subject=${encodeURIComponent(isOwn ? 'My SkillVentures profile' : `${name} on SkillVentures`)}&body=${encodeURIComponent(text)}` },
+  ];
 
-  async function share() {
-    const title = isOwn ? 'My SkillVentures profile' : `${name} on SkillVentures`;
-    if (navigator.share) {
-      // Cancelling the native sheet rejects — nothing to report.
-      await navigator.share({ title, url }).catch(() => undefined);
-      return;
-    }
+  async function copyLink() {
     try {
       await navigator.clipboard.writeText(url);
       setState('copied');
@@ -108,13 +110,34 @@ function ShareProfileButton({ userId, name, isOwn }: { userId: string; name: str
   }
 
   return (
-    <div className="flex flex-col items-start gap-1">
-      <button type="button" onClick={() => void share()} className="sv-btn-ghost">
-        <i className={`fas ${state === 'copied' ? 'fa-check' : 'fa-share-nodes'}`} aria-hidden />
-        {state === 'copied' ? 'Link copied' : 'Share profile'}
-      </button>
-      {state === 'failed' ? <span className="break-all text-xs text-slate-500">Copy this link: {url}</span> : null}
-    </div>
+    <details className="sv-share relative">
+      <summary className="sv-btn-ghost cursor-pointer list-none"><i className="fas fa-share-nodes" aria-hidden />Share profile</summary>
+      <div
+        className="absolute right-0 z-30 mt-2 w-64 rounded-2xl border border-violet-100 bg-white p-2 shadow-[0_12px_40px_rgba(15,23,42,.16)]"
+        onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}
+      >
+        {/* Only mobile/secure-context browsers expose the OS share sheet. */}
+        {navigator.share ? (
+          <button
+            type="button"
+            className="sv-share-item w-full"
+            onClick={() => void navigator.share({ title: isOwn ? 'My SkillVentures profile' : `${name} on SkillVentures`, url }).catch(() => undefined)}
+          >
+            <i className="fas fa-mobile-screen w-5 text-center text-violet-700" aria-hidden />More apps…
+          </button>
+        ) : null}
+        {targets.map((target) => (
+          <a key={target.label} href={target.href} target="_blank" rel="noreferrer" className="sv-share-item">
+            <i className={`${target.icon} w-5 text-center ${target.color}`} aria-hidden />Share via {target.label}
+          </a>
+        ))}
+        <button type="button" onClick={() => void copyLink()} className="sv-share-item w-full">
+          <i className={`fas w-5 text-center ${state === 'copied' ? 'fa-check text-emerald-500' : 'fa-link text-slate-500'}`} aria-hidden />
+          {state === 'copied' ? 'Link copied' : 'Copy link'}
+        </button>
+        {state === 'failed' ? <p className="break-all px-3 py-2 text-xs text-slate-500">Copy this link: {url}</p> : null}
+      </div>
+    </details>
   );
 }
 
