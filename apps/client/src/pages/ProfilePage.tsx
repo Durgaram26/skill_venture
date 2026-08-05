@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { MarketplaceShell } from '../components/AppShell';
 import { useAuthStore } from '../features/auth/authStore';
@@ -88,7 +88,8 @@ export function ProfilePage() {
 }
 
 function ShareProfileButton({ userId, name, isOwn }: { userId: string; name: string; isOwn: boolean }) {
-  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const [state, setState] = useState<'idle' | 'copied'>('idle');
+  const linkRef = useRef<HTMLInputElement>(null);
   const url = `${window.location.origin}/u/${userId}`;
   const text = isOwn ? `Here is my SkillVentures profile: ${url}` : `${name} on SkillVentures: ${url}`;
   const targets = [
@@ -103,39 +104,69 @@ function ShareProfileButton({ userId, name, isOwn }: { userId: string; name: str
     try {
       await navigator.clipboard.writeText(url);
       setState('copied');
+      setTimeout(() => setState('idle'), 2500);
     } catch {
-      setState('failed');
+      // No clipboard permission (or insecure origin) — let them copy it by hand.
+      linkRef.current?.select();
     }
-    setTimeout(() => setState('idle'), 2500);
+  }
+
+  function nativeShare() {
+    void navigator
+      .share({ title: isOwn ? 'My SkillVentures profile' : `${name} on SkillVentures`, url })
+      .catch(() => undefined);
   }
 
   return (
     <details className="sv-share relative">
-      <summary className="sv-btn-ghost cursor-pointer list-none"><i className="fas fa-share-nodes" aria-hidden />Share profile</summary>
-      <div
-        className="absolute right-0 z-30 mt-2 w-64 rounded-2xl border border-violet-100 bg-white p-2 shadow-[0_12px_40px_rgba(15,23,42,.16)]"
-        onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}
+      <summary
+        className="sv-btn-ghost cursor-pointer list-none"
+        onClick={(event) => {
+          // Phones get the OS share sheet instead of our own menu.
+          if (!navigator.share) return;
+          event.preventDefault();
+          nativeShare();
+        }}
       >
-        {/* Only mobile/secure-context browsers expose the OS share sheet. */}
-        {navigator.share ? (
-          <button
-            type="button"
-            className="sv-share-item w-full"
-            onClick={() => void navigator.share({ title: isOwn ? 'My SkillVentures profile' : `${name} on SkillVentures`, url }).catch(() => undefined)}
-          >
-            <i className="fas fa-mobile-screen w-5 text-center text-violet-700" aria-hidden />More apps…
-          </button>
-        ) : null}
-        {targets.map((target) => (
-          <a key={target.label} href={target.href} target="_blank" rel="noreferrer" className="sv-share-item">
-            <i className={`${target.icon} w-5 text-center ${target.color}`} aria-hidden />Share via {target.label}
-          </a>
-        ))}
-        <button type="button" onClick={() => void copyLink()} className="sv-share-item w-full">
-          <i className={`fas w-5 text-center ${state === 'copied' ? 'fa-check text-emerald-500' : 'fa-link text-slate-500'}`} aria-hidden />
-          {state === 'copied' ? 'Link copied' : 'Copy link'}
+        <i className="fas fa-share-nodes" aria-hidden />Share profile
+      </summary>
+      <div className="absolute left-0 z-30 mt-2 w-[21rem] max-w-[calc(100vw-2.5rem)] rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,.16)]">
+        <h3 className="font-display text-lg font-bold text-violet-700">Social share</h3>
+        <p className="mt-2 text-sm text-slate-500">Share this link via</p>
+        <div
+          className="mt-3 flex flex-wrap gap-2"
+          onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}
+        >
+          {targets.map((target) => (
+            <a
+              key={target.label}
+              href={target.href}
+              target="_blank"
+              rel="noreferrer"
+              className="sv-share-icon"
+              aria-label={`Share via ${target.label}`}
+              title={`Share via ${target.label}`}
+            >
+              <i className={`${target.icon} ${target.color}`} aria-hidden />
+            </a>
+          ))}
+        </div>
+        <p className="mt-5 text-sm text-slate-500">Copy link</p>
+        <div className="mt-2 flex items-center gap-2 rounded-xl border border-violet-200 px-3 py-2.5">
+          <i className="fas fa-link text-violet-500" aria-hidden />
+          <input
+            ref={linkRef}
+            readOnly
+            value={url}
+            aria-label="Profile link"
+            onFocus={(event) => event.currentTarget.select()}
+            className="w-full min-w-0 bg-transparent text-sm text-slate-600 outline-none"
+          />
+        </div>
+        <button type="button" onClick={() => void copyLink()} className="sv-btn-primary mt-4 w-full justify-center">
+          <i className={`fas ${state === 'copied' ? 'fa-check' : 'fa-copy'}`} aria-hidden />
+          {state === 'copied' ? 'Copied' : 'Copy'}
         </button>
-        {state === 'failed' ? <p className="break-all px-3 py-2 text-xs text-slate-500">Copy this link: {url}</p> : null}
       </div>
     </details>
   );
