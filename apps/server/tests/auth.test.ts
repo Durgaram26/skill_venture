@@ -140,6 +140,26 @@ describe('Auth API', () => {
     });
   });
 
+  describe('GET /api/v1/auth/users/:id', () => {
+    it('serves a shareable profile without contact details, no auth needed', async () => {
+      const register = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({ ...studentPayload, email: 'shared@example.com' });
+      const id = register.body.data.user.id as string;
+
+      const res = await request(app).get(`/api/v1/auth/users/${id}`);
+      expect(res.status).toBe(200);
+      expect(res.body.data.user).toEqual({
+        id,
+        role: 'student',
+        name: studentPayload.name,
+        profile: expect.objectContaining({ city: studentPayload.city }),
+      });
+
+      expect((await request(app).get('/api/v1/auth/users/not-an-id')).status).toBe(404);
+    });
+  });
+
   describe('PATCH /api/v1/auth/me', () => {
     it('updates name, email, and phone', async () => {
       const register = await request(app)

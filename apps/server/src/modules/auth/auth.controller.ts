@@ -120,6 +120,22 @@ export async function me(req: Request, res: Response, next: NextFunction): Promi
   }
 }
 
+export async function publicProfile(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const user = await authService.getPublicProfile(String(req.params.id));
+    res.status(200).json({
+      success: true,
+      data: { user },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function updateMe(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const authReq = req as AuthenticatedRequest;

@@ -32,6 +32,7 @@ router.post('/logout', authController.logout);
 
 router.post('/google', validateBody(googleAuthSchema), authController.googleAuth);
 
+router.get('/users/:id', authController.publicProfile);
 router.get('/me', authenticate, authController.me);
 router.patch('/me', authenticate, validateBody(updateProfileSchema), authController.updateMe);
 

@@ -10,6 +10,8 @@ import { useAuthStore } from '../features/auth/authStore';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
+export type PublicProfile = Pick<AuthPayload['user'], 'id' | 'role' | 'name' | 'profile'>;
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -74,6 +76,9 @@ export const api = {
   },
   me() {
     return request<{ user: AuthPayload['user'] }>('/api/v1/auth/me');
+  },
+  publicProfile(id: string) {
+    return request<{ user: PublicProfile }>(`/api/v1/auth/users/${id}`);
   },
   updateProfile(payload: { name?: string; email?: string; phone?: string; about?: string }) {
     return request<{ user: AuthPayload['user'] }>('/api/v1/auth/me', {

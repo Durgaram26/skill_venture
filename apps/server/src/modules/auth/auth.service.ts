@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { isValidObjectId } from 'mongoose';
 import type { AuthUser } from '@skillventures/shared-types';
 import { env } from '../../config/env.js';
 import { AppError } from '../../utils/AppError.js';
@@ -191,6 +192,16 @@ export async function getProfile(userId: string) {
     throw new AppError('User not found', 404, 'NOT_FOUND');
   }
   return toAuthUser(user);
+}
+
+/** Shareable profile: no email, phone, or account flags. */
+export async function getPublicProfile(userId: string) {
+  const user = isValidObjectId(userId) ? await User.findById(userId) : null;
+  if (!user || user.isBanned) {
+    throw new AppError('Profile not found', 404, 'NOT_FOUND');
+  }
+  const { id, role, name, profile } = toAuthUser(user);
+  return { id, role, name, profile };
 }
 
 export async function updateProfile(userId: string, input: UpdateProfileInput) {

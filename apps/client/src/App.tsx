@@ -88,6 +88,7 @@ export function App() {
       {/* <Route path="/student/payments" element={<StudentPaymentsPage />} /> */}
       <Route path="/profile" element={<ProfileSettingsPage />} />
       <Route path="/profile/view" element={<ProfilePage />} />
+      <Route path="/u/:id" element={<ProfilePage />} />
       <Route path="/admin" element={<AdminOverviewPage />} />
       <Route path="/admin/institutions" element={<AdminInstitutionsPage />} />
       <Route path="/admin/listings" element={<AdminListingsPage />} />
