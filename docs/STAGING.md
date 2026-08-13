@@ -74,8 +74,9 @@ export DOCKER_HOST=unix:///var/run/docker.sock   # if Desktop socket fails
 docker compose up -d
 ```
 
-- Redis: `localhost:6379`
 - Mongo (compose): `localhost:27019` (avoids host `:27017` conflicts)
+
+Redis is optional. Without `REDIS_URL`, the server uses in-memory cache and token storage.
 
 If you already have Mongo on `:27017`, point `MONGODB_URI` at that instance instead.
 

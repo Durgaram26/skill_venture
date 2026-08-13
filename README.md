@@ -13,12 +13,12 @@ packages/shared-types  Shared TS contracts
 ## Prerequisites
 
 - Node.js 20+
-- Docker (MongoDB + Redis via `docker-compose`)
+- Docker (MongoDB via `docker-compose`; Redis optional — not required)
 
 ## Local setup
 
 ```bash
-# Start Mongo + Redis
+# Start Mongo (Redis not required — server uses in-memory fallback)
 # Mongo is published on :27019 to avoid conflicts with a local Mongo on :27017
 docker compose up -d
 
@@ -61,6 +61,8 @@ npm run test -w @skillventures/client
 ```
 
 ## Staging deploy
+
+See also **[Hostinger VPS (gencl11)](docs/HOSTINGER.md)** for Docker deployment alongside existing `/docker` projects.
 
 ### Backend (Railway)
 

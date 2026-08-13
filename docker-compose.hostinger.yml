@@ -1,0 +1,74 @@
+# gencl11 — Hostinger VPS production stack
+#
+# Safe alongside existing /docker projects:
+# - Uses its own named volumes (gencl11_*); does NOT touch other MongoDB data
+# - Mongo is internal only (no host port 27017 binding)
+# - No Redis — server uses in-memory cache/token store
+# - Frontend :8094, Backend :5016 (change if already taken on your VPS)
+#
+# Deploy:
+#   cd /docker/gencl11
+#   cp .env.hostinger.example .env   # edit secrets + CLIENT_URL
+#   docker compose -f docker-compose.hostinger.yml up -d --build
+
+name: gencl11
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: gencl11_mongo
+    restart: unless-stopped
+    volumes:
+      - gencl11_mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gencl11_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    image: gencl11-backend
+    container_name: gencl11_backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/skillventures
+    ports:
+      - '5016:4000'
+    volumes:
+      - gencl11_uploads:/tmp/uploads
+    networks:
+      - gencl11_net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+      args:
+        VITE_API_URL: ''
+    image: gencl11-frontend
+    container_name: gencl11_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '8094:80'
+    networks:
+      - gencl11_net
+
+volumes:
+  gencl11_mongo_data:
+  gencl11_uploads:
+
+networks:
+  gencl11_net:
+    name: gencl11_net
