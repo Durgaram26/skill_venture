@@ -95,25 +95,98 @@ docker compose -f docker-compose.hostinger.yml up -d --build
 
 Mongo/upload volumes are preserved across rebuilds.
 
-## Optional: domain + HTTPS
+## HTTPS with Certbot (host nginx → Docker :8094)
 
-Point DNS `A` record to the VPS IP, then either:
+Certbot on the VPS is the usual setup. The Docker stack stays on **8094**; host nginx on **80/443** terminates SSL and proxies to it.
 
-1. **Hostinger panel** — reverse proxy to `:8094`, or  
-2. **Certbot nginx** on the host forwarding to `127.0.0.1:8094`
+**Requirements**
 
-After HTTPS works, set in `.env`:
+- A **domain name** (e.g. `gencl11.yourdomain.com`) — Let's Encrypt cannot issue certs for `194.238.22.210` alone
+- DNS **A record** → `194.238.22.210`
+- Host **nginx** + **certbot** installed (`certbot --version`)
 
+### 1. DNS
+
+In Hostinger (or your DNS provider):
+
+| Type | Name | Value |
+|------|------|-------|
+| A | `gencl11` (or subdomain you choose) | `194.238.22.210` |
+
+Wait a few minutes, then check:
+
+```bash
+dig +short gencl11.yourdomain.com
+# should print 194.238.22.210
 ```
+
+### 2. Host nginx site (HTTP first)
+
+Edit `deploy/host-nginx-gencl11.conf` — replace `gencl11.yourdomain.com` with your real domain, then on the VPS:
+
+```bash
+cd /docker/gen_cl11
+sudo cp deploy/host-nginx-gencl11.conf /etc/nginx/sites-available/gencl11
+# edit server_name if needed:
+sudo nano /etc/nginx/sites-available/gencl11
+
+sudo ln -sf /etc/nginx/sites-available/gencl11 /etc/nginx/sites-enabled/gencl11
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Confirm HTTP works (before SSL):
+
+```bash
+curl -I http://gencl11.yourdomain.com
+# should return 200 from your app
+```
+
+### 3. Run Certbot
+
+```bash
+sudo certbot --nginx -d gencl11.yourdomain.com
+```
+
+Certbot will:
+
+- Obtain the Let's Encrypt certificate
+- Add the `listen 443 ssl` block to your nginx site
+- Set up HTTP → HTTPS redirect
+- Configure auto-renewal (usually via systemd timer)
+
+Test renewal:
+
+```bash
+sudo certbot renew --dry-run
+```
+
+### 4. Update app env for HTTPS
+
+```bash
+cd /docker/gen_cl11
+nano .env
+```
+
+```env
 CLIENT_URL=https://gencl11.yourdomain.com
 COOKIE_SECURE=true
 ```
 
-Then rebuild frontend + restart backend:
+Restart:
 
 ```bash
 docker compose -f docker-compose.hostinger.yml up -d --build frontend backend
 ```
+
+Open: **https://gencl11.yourdomain.com**
+
+### Notes
+
+- Users should use the **https domain URL**, not `http://194.238.22.210:8094`, after SSL is live.
+- Port **8094** can stay internal-only once nginx handles public traffic on 443.
+- If port **80** is already used by host nginx for other sites, add the `gencl11` server block to the existing nginx — do not start a second nginx on 80.
+- If certbot fails, check: DNS propagated, firewall allows 80/443, `gencl11_frontend` container is up (`docker ps --filter name=gencl11`).
 
 ## Safety checklist before `docker compose up`
 
