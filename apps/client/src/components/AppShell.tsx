@@ -367,53 +367,50 @@ export function MarketplaceShell({
       </main>
 
       {!bare && !hideFooter ? (
-        <footer className="mt-auto bg-gray-900 py-12 text-white">
+        <footer className="sv-site-footer mt-auto">
           <div className="mx-auto max-w-7xl px-4 md:px-6">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
               <div>
                 <div className="mb-4"><BrandWordmark compact onDark /></div>
-                <p className="text-gray-400">
-                  The discovery layer for India&apos;s courses, bootcamps, and hackathons.
-                </p>
+                <p className="sv-footer-muted max-w-sm leading-7">Discover. Learn. Compete. Get Hired.</p>
+                <p className="sv-footer-muted mt-3 max-w-sm text-sm leading-6">SkillVentures is a student-focused platform that helps you discover courses, join bootcamps, participate in hackathons, explore job opportunities, and build your professional profile—all in one place.</p>
               </div>
               <div>
-                <h4 className="mb-4 text-lg font-semibold">Quick Links</h4>
-                <ul className="space-y-2 text-gray-400">
-                  <li>
-                    <Link to="/listings" className="hover:text-white">
-                      Explore
-                    </Link>
-                  </li>
-                  {/* Compare navigation is temporarily hidden; restore when the feature is ready. */}
-                  <li>
-                    <Link to="/register?role=institution" className="hover:text-white">
-                      Become a partner
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/institution/billing" className="hover:text-white">
-                      Plans &amp; billing
-                    </Link>
-                  </li>
+                <h4 className="mb-4 text-lg font-semibold">Explore</h4>
+                <ul className="sv-footer-muted space-y-2 text-sm">
+                  <li><Link to="/listings?type=course">Courses</Link></li>
+                  <li><Link to="/listings?type=bootcamp">Bootcamps</Link></li>
+                  <li><Link to="/listings?type=hackathon">Hackathons</Link></li>
+                  <li><Link to="/listings">Job Updates</Link></li>
                 </ul>
               </div>
               <div>
-                <h4 className="mb-4 text-lg font-semibold">Contact</h4>
-                <ul className="space-y-2 text-gray-400">
-                  <li>
-                    <i className="fas fa-envelope mr-2" aria-hidden /> hello@skillventures.com
-                  </li>
-                  <li>
-                    <i className="fas fa-phone mr-2" aria-hidden /> +91 98765 43210
-                  </li>
-                  <li>
-                    <i className="fas fa-map-marker-alt mr-2" aria-hidden /> Bengaluru, India
-                  </li>
+                <h4 className="mb-4 text-lg font-semibold">For Students</h4>
+                <ul className="sv-footer-muted space-y-2 text-sm">
+                  <li><Link to="/profile/view">Create Your Profile</Link></li>
+                  <li><Link to="/listings">Discover Courses</Link></li>
+                  <li><Link to="/listings?type=bootcamp">Find Bootcamps</Link></li>
+                  <li><Link to="/listings?type=hackathon">Join Hackathons</Link></li>
+                  <li><Link to="/listings">Explore Job Opportunities</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="mb-4 text-lg font-semibold">For Institutions</h4>
+                <ul className="sv-footer-muted space-y-2 text-sm">
+                  <li><Link to="/register?role=institution">List Your Courses</Link></li>
+                  <li><Link to="/register?role=institution">Promote Bootcamps</Link></li>
+                  <li><Link to="/register?role=institution">Host Hackathons</Link></li>
+                  <li><Link to="/register?role=institution">Reach Students</Link></li>
                 </ul>
               </div>
             </div>
+            <div className="mt-8 grid gap-8 border-t border-white/10 pt-8 md:grid-cols-3">
+              <div><h4 className="mb-3 font-semibold">Company</h4><ul className="sv-footer-muted space-y-2 text-sm"><li><Link to="/">About SkillVentures</Link></li><li><a href="mailto:helloskillventures@gmail.com">Contact Us</a></li></ul></div>
+              <div><h4 className="mb-3 font-semibold">Stay Connected</h4><p className="sv-footer-muted text-sm leading-6">Discover new learning opportunities, competitions, and career updates with SkillVentures.</p></div>
+              <div><h4 className="mb-3 font-semibold">Email</h4><a className="sv-footer-muted text-sm" href="mailto:helloskillventures@gmail.com">helloskillventures@gmail.com</a></div>
+            </div>
             <div className="mt-8 border-t border-gray-800 pt-8 text-center text-gray-400">
-              <p>© {new Date().getFullYear()} SkillVentures. All rights reserved. | Prices in Indian Rupees (₹)</p>
+              <p>© 2026 SkillVentures. All Rights Reserved.</p>
             </div>
           </div>
         </footer>
