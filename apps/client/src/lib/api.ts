@@ -80,11 +80,17 @@ export const api = {
   publicProfile(id: string) {
     return request<{ user: PublicProfile }>(`/api/v1/auth/users/${id}`);
   },
-  updateProfile(payload: { name?: string; email?: string; phone?: string; about?: string }) {
+  updateProfile(payload: { name?: string; email?: string; phone?: string; about?: string; emojiTag?: string }) {
     return request<{ user: AuthPayload['user'] }>('/api/v1/auth/me', {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });
+  },
+  uploadProfileImage(payload: { mimeType: string; data: string; fileName?: string }) {
+    return request<{ file: { url: string; fileName: string; size: number } }>(
+      '/api/v1/uploads/profile-image',
+      { method: 'POST', body: JSON.stringify(payload) },
+    );
   },
 
   listListings(params: URLSearchParams) {
@@ -594,4 +600,62 @@ export const api = {
       }[];
     }>('/api/v1/institutions/me/analytics');
   },
+
+  // ── Job postings ──────────────────────────────────────────────────────────
+  myJobs(status?: string) {
+    const q = status && status !== 'all' ? `?status=${status}` : '';
+    return request<PaginatedResult<JobSummary>>(`/api/v1/institutions/me/jobs${q}`);
+  },
+  createJob(payload: JobCreatePayload) {
+    return request<{ job: JobSummary }>('/api/v1/institutions/me/jobs', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  updateJob(id: string, payload: Partial<JobCreatePayload> & { status?: string }) {
+    return request<{ job: JobSummary }>(`/api/v1/institutions/me/jobs/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+  deleteJob(id: string) {
+    return request<{ deleted: boolean }>(`/api/v1/institutions/me/jobs/${id}`, {
+      method: 'DELETE',
+    });
+  },
+  studentJobFeed(page = 1) {
+    return request<PaginatedResult<JobSummary> & { categories: string[] }>(
+      `/api/v1/students/me/jobs?page=${page}`,
+    );
+  },
+  institutionPublicJobs(institutionId: string) {
+    return request<PaginatedResult<JobSummary>>(`/api/v1/institutions/${institutionId}/jobs`);
+  },
+};
+
+export type JobSummary = {
+  id: string;
+  institutionId: string;
+  institutionName?: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  jobType: 'full-time' | 'part-time' | 'internship' | 'contract' | 'freelance';
+  salaryRange?: string;
+  applyUrl?: string;
+  status: 'active' | 'closed';
+  expiresAt?: string;
+  createdAt: string;
+};
+
+export type JobCreatePayload = {
+  title: string;
+  description: string;
+  category: string;
+  location?: string;
+  jobType?: JobSummary['jobType'];
+  salaryRange?: string;
+  applyUrl?: string;
+  expiresAt?: string;
 };

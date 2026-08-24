@@ -49,6 +49,7 @@ export interface AuthUser {
   isBanned: boolean;
   profile?: {
     avatar?: string;
+    emojiTag?: string;
     about?: string;
     city?: string;
     currentEducationLevel?: string;
@@ -149,4 +150,5 @@ export interface EnquirySummary {
   createdAt: string;
   updatedAt: string;
   listing?: Pick<ListingSummary, 'id' | 'title' | 'slug' | 'type'>;
+  studentProfile?: Pick<AuthUser, 'id' | 'name' | 'profile'>;
 }

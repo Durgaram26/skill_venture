@@ -12,6 +12,7 @@ import type { CreateEnquiryInput, EnquiryListQuery } from './enquiries.validatio
 function toEnquirySummary(
   doc: EnquiryDocument,
   listing?: { id: string; title: string; slug: string; type: string } | null,
+  studentProfile?: { id: string; name: string; profile?: { avatar?: string; emojiTag?: string; about?: string; city?: string; currentEducationLevel?: string } },
 ): EnquirySummary {
   return {
     id: String(doc._id),
@@ -37,6 +38,7 @@ function toEnquirySummary(
             : NonNullable<EnquirySummary['listing']>['type'],
         }
       : undefined,
+    studentProfile,
   };
 }
 
@@ -182,6 +184,9 @@ export async function listInstitutionEnquiries(userId: string, query: EnquiryLis
   const listingIds = items.map((e) => e.listingId);
   const listings = await Listing.find({ _id: { $in: listingIds } }).lean();
   const listingMap = new Map(listings.map((l) => [String(l._id), l]));
+  const studentIds = items.map((e) => e.studentId).filter(Boolean);
+  const students = await User.find({ _id: { $in: studentIds }, role: 'student' }).lean();
+  const studentMap = new Map(students.map((student) => [String(student._id), student]));
 
   return paginatedResult(
     items.map((e) => {
@@ -189,6 +194,26 @@ export async function listInstitutionEnquiries(userId: string, query: EnquiryLis
       return toEnquirySummary(
         e,
         l ? { id: String(l._id), title: l.title, slug: l.slug, type: l.type } : null,
+        e.studentId
+          ? (() => {
+              const student = studentMap.get(String(e.studentId));
+              return student
+                ? {
+                    id: String(student._id),
+                    name: student.name,
+                    profile: student.profile
+                      ? {
+                          avatar: student.profile.avatar ?? undefined,
+                          emojiTag: student.profile.emojiTag ?? undefined,
+                          about: student.profile.about ?? undefined,
+                          city: student.profile.city ?? undefined,
+                          currentEducationLevel: student.profile.currentEducationLevel ?? undefined,
+                        }
+                      : undefined,
+                  }
+                : undefined;
+            })()
+          : undefined,
       );
     }),
     total,

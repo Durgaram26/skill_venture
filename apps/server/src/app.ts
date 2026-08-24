@@ -27,8 +27,13 @@ import paymentsRouter, {
   institutionSubscriptionRouter,
   studentPaymentsRouter,
 } from './modules/payments/payments.routes.js';
-import institutionUploadsRouter from './modules/uploads/uploads.routes.js';
+import institutionUploadsRouter, { profileUploadsRouter } from './modules/uploads/uploads.routes.js';
 import { institutionPayoutRouter } from './modules/institutions/institutions.routes.js';
+import {
+  institutionJobsRouter,
+  studentJobFeedRouter,
+  institutionPublicJobsRouter,
+} from './modules/jobs/jobs.routes.js';
 
 export function createApp() {
   const app = express();
@@ -53,6 +58,7 @@ export function createApp() {
 
   // Image uploads need a larger JSON body — register before the global parser.
   app.use('/api/v1/institutions/me/uploads', institutionUploadsRouter);
+  app.use('/api/v1/uploads', profileUploadsRouter);
 
   app.use(
     express.json({
@@ -87,6 +93,9 @@ export function createApp() {
   app.use('/api/v1/institutions/me/analytics', institutionAnalyticsRouter);
   app.use('/api/v1/institutions/me/earnings', institutionEarningsRouter);
   app.use('/api/v1/institutions/me/payout', institutionPayoutRouter);
+  app.use('/api/v1/institutions/me/jobs', institutionJobsRouter);
+  app.use('/api/v1/students/me/jobs', studentJobFeedRouter);
+  app.use('/api/v1/institutions/:id/jobs', institutionPublicJobsRouter);
   app.use('/api/v1/institutions', institutionsPublicRouter);
   app.use('/api/v1/enquiries', enquiriesRouter);
   app.use('/api/v1/students/me/enquiries', studentEnquiriesRouter);

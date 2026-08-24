@@ -4,6 +4,7 @@ import type { AuthProvider, UserRole } from '@skillventures/shared-types';
 const userProfileSchema = new Schema(
   {
     avatar: { type: String },
+    emojiTag: { type: String, trim: true, maxlength: 8 },
     about: { type: String, trim: true, maxlength: 500 },
     city: { type: String },
     currentEducationLevel: { type: String },

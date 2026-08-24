@@ -4,7 +4,7 @@ import { MarketplaceShell } from '../components/AppShell';
 import { useAuthStore } from '../features/auth/authStore';
 import { api, ApiError } from '../lib/api';
 
-type ProfileForm = { name: string; email: string; phone: string; about: string };
+type ProfileForm = { name: string; email: string; phone: string; about: string; emojiTag: string };
 
 function Icon({ children }: { children: ReactNode }) {
   return (
@@ -46,6 +46,7 @@ export function ProfileSettingsPage() {
     email: user?.email ?? '',
     phone: user?.phone ?? '',
     about: user?.profile?.about ?? '',
+    emojiTag: user?.profile?.emojiTag ?? '',
   };
   const [form, setForm] = useState<ProfileForm>(userForm);
   const [savedForm, setSavedForm] = useState<ProfileForm | null>(userForm);
@@ -63,7 +64,7 @@ export function ProfileSettingsPage() {
     let cancelled = false;
     void api.me().then((data) => {
       if (cancelled) return;
-      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '', about: data.user.profile?.about ?? '' };
+      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '', about: data.user.profile?.about ?? '', emojiTag: data.user.profile?.emojiTag ?? '' };
       setForm(next);
       setSavedForm(next);
       updateUser(data.user);
@@ -86,14 +87,38 @@ export function ProfileSettingsPage() {
     setError(null);
     setSaved(false);
     try {
-      const data = await api.updateProfile({ name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(), about: form.about.trim() });
-      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '', about: data.user.profile?.about ?? '' };
+      const data = await api.updateProfile({ name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(), about: form.about.trim(), emojiTag: form.emojiTag.trim() });
+      const next = { name: data.user.name, email: data.user.email, phone: data.user.phone ?? '', about: data.user.profile?.about ?? '', emojiTag: data.user.profile?.emojiTag ?? '' };
       updateUser(data.user);
       setForm(next);
       setSavedForm(next);
       setSaved(true);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not save profile');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function uploadAvatar(file: File) {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      setError('Choose a JPG, PNG, or WebP image up to 5 MB.');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '');
+        reader.onerror = () => reject(new Error('Could not read image'));
+        reader.readAsDataURL(file);
+      });
+      const result = await api.uploadProfileImage({ mimeType: file.type, data: dataUrl, fileName: file.name });
+      if (user) updateUser({ ...user, profile: { ...user.profile, avatar: result.file.url } });
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Could not upload profile picture');
     } finally {
       setSaving(false);
     }
@@ -143,6 +168,8 @@ export function ProfileSettingsPage() {
                 <label className="block text-sm font-semibold text-slate-900"><span className="mb-2 flex items-center gap-2"><Icon><MailIcon /></Icon>Email address</span><input className="sv-input" type="email" value={form.email} onChange={(e) => setField('email', e.target.value)} required autoComplete="email" /><small className="mt-2 block font-normal text-slate-500">We’ll never share your email with anyone else.</small></label>
                 <label className="block text-sm font-semibold text-slate-900 md:col-span-2"><span className="mb-2 flex items-center gap-2"><Icon><PhoneIcon /></Icon>Mobile number</span><input className="sv-input" type="tel" value={form.phone} onChange={(e) => setField('phone', e.target.value)} placeholder="e.g. 9876543210" autoComplete="tel" inputMode="tel" /><small className="mt-2 block font-normal text-slate-500">Used for important updates and account recovery.</small></label>
                 <label className="block text-sm font-semibold text-slate-900 md:col-span-2"><span className="mb-2 flex items-center gap-2"><Icon><i className="fas fa-align-left" aria-hidden /></Icon>About you</span><textarea className="sv-input min-h-32 resize-y" value={form.about} onChange={(e) => setField('about', e.target.value.slice(0, 500))} placeholder="Tell institutions what you are learning, what interests you, or what opportunity you are looking for…" maxLength={500} /><span className="mt-2 flex justify-between text-xs font-normal text-slate-500"><span>A short introduction shown on your learner profile.</span><span>{form.about.length}/500</span></span></label>
+                <label className="block text-sm font-semibold text-slate-900"><span className="mb-2 flex items-center gap-2"><Icon><i className="fas fa-face-smile" aria-hidden /></Icon>Emoji tag</span><input className="sv-input text-2xl" value={form.emojiTag} onChange={(e) => setField('emojiTag', e.target.value.slice(0, 8))} placeholder="🚀" maxLength={8} /></label>
+                <div className="block text-sm font-semibold text-slate-900"><span className="mb-2 flex items-center gap-2"><Icon><i className="fas fa-camera" aria-hidden /></Icon>Profile picture</span><label className="sv-btn-ghost inline-flex cursor-pointer"><i className="fas fa-upload" aria-hidden />{saving ? 'Uploading…' : 'Choose image'}<input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" disabled={saving} onChange={(e) => { const file = e.target.files?.[0]; if (file) void uploadAvatar(file); e.currentTarget.value = ''; }} /></label><small className="mt-2 block font-normal text-slate-500">JPG, PNG, or WebP up to 5 MB.</small></div>
               </div>
               <div className="sv-profile-secure mt-7 flex items-center gap-4 rounded-2xl p-4"><span className="rounded-xl bg-violet-600 p-3 text-white"><LockIcon /></span><div><p className="font-bold text-violet-700">Your information is secure</p><p className="mt-1 text-sm text-slate-600">We use industry-standard encryption to protect your data.</p></div></div>
               {error ? <p className="mt-5 rounded-lg bg-spark-soft px-3 py-2 text-sm font-semibold text-[#b45309]" role="alert">{error}</p> : null}

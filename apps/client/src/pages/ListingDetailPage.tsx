@@ -179,7 +179,7 @@ export function ListingDetailPage() {
     <MarketplaceShell>
       {/* Hero cover */}
       <div className="relative -mx-4 mb-8 overflow-hidden md:-mx-6">
-        <div className="sv-hero-curve relative aspect-[21/9] min-h-[220px] bg-gradient-to-br from-void via-ink to-teal md:min-h-[300px]">
+        <div className="sv-hero-curve relative aspect-[21/6] min-h-[160px] bg-gradient-to-br from-void via-ink to-teal md:min-h-[200px]">
           {cover ? (
             <img
               src={cover}

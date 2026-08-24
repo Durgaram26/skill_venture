@@ -9,3 +9,6 @@ export const listingImageUploadSchema = z
   .strict();
 
 export type ListingImageUploadInput = z.infer<typeof listingImageUploadSchema>;
+
+export const profileImageUploadSchema = listingImageUploadSchema;
+export type ProfileImageUploadInput = z.infer<typeof profileImageUploadSchema>;

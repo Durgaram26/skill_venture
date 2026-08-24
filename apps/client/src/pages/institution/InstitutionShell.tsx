@@ -39,9 +39,19 @@ function IconInbox(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+function IconBriefcase(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...props}>
+      <rect x="2" y="7" width="20" height="14" rx="2" />
+      <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const NAV = [
   { to: '/institution', end: true, label: 'Hub', Icon: IconHub },
   { to: '/institution?tab=enquiries', end: true, label: 'Enquiries', Icon: IconInbox },
+  { to: '/institution/jobs', end: false, label: 'Jobs', Icon: IconBriefcase },
   { to: '/institution/analytics', end: false, label: 'Analytics', Icon: IconChart },
   { to: '/institution/billing', end: false, label: 'Billing', Icon: IconBilling },
 ] as const;

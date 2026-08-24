@@ -63,9 +63,10 @@ export const updateProfileSchema = z
       ])
       .optional(),
     about: z.string().trim().max(500, 'About must be 500 characters or less').optional(),
+    emojiTag: z.string().trim().max(8, 'Emoji tag must be 8 characters or less').optional(),
   })
   .strict()
-  .refine((data) => data.name !== undefined || data.email !== undefined || data.phone !== undefined || data.about !== undefined, {
+  .refine((data) => data.name !== undefined || data.email !== undefined || data.phone !== undefined || data.about !== undefined || data.emojiTag !== undefined, {
     message: 'At least one field is required',
   });
 

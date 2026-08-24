@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { MarketplaceShell } from '../components/AppShell';
 import { useAuthStore } from '../features/auth/authStore';
-import { api, type PublicProfile } from '../lib/api';
+import { api, type PublicProfile, type JobSummary } from '../lib/api';
 
 export function ProfilePage() {
   const { id } = useParams();
@@ -12,6 +12,7 @@ export function ProfilePage() {
   const [loadFailed, setLoadFailed] = useState(false);
   const [savedPrograms, setSavedPrograms] = useState<{ id: string; listing: { slug: string; title: string; type: string } }[]>([]);
   const [enquiries, setEnquiries] = useState<{ id: string; status: string; listing?: { slug?: string; title?: string; type?: string } }[]>([]);
+  const [jobFeed, setJobFeed] = useState<JobSummary[]>([]);
 
   useEffect(() => {
     if (isOwn || !id) return;
@@ -22,9 +23,14 @@ export function ProfilePage() {
 
   useEffect(() => {
     if (!isOwn || authUser?.role !== 'student') return;
-    void Promise.allSettled([api.myBookmarks(), api.myStudentEnquiries()]).then(([bookmarks, enquiryResult]) => {
+    void Promise.allSettled([
+      api.myBookmarks(),
+      api.myStudentEnquiries(),
+      api.studentJobFeed(),
+    ]).then(([bookmarks, enquiryResult, jobResult]) => {
       if (bookmarks.status === 'fulfilled') setSavedPrograms(bookmarks.value.items.slice(0, 3));
       if (enquiryResult.status === 'fulfilled') setEnquiries(enquiryResult.value.items.slice(0, 3));
+      if (jobResult.status === 'fulfilled') setJobFeed(jobResult.value.items.slice(0, 5));
     });
   }, [isOwn, authUser]);
 
@@ -55,7 +61,7 @@ export function ProfilePage() {
             <div className="h-24 bg-gradient-to-r from-[#102d80] via-[#1455d9] to-[#6d28d9] md:h-32" />
             <div className="px-5 pb-7 md:px-8">
               <div className="-mt-14 flex flex-col gap-5 sm:-mt-16 sm:flex-row sm:items-end sm:justify-between">
-                <div className="flex items-end gap-4"><div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#1455d9] text-3xl font-bold text-white shadow-lg">{user.profile?.avatar ? <img src={user.profile.avatar} alt="" className="h-full w-full object-cover" /> : initials}</div><div className="sv-profile-name translate-y-3"><h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950">{user.name}</h2><span className="mt-1 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-bold capitalize text-violet-700">{user.role.replace('_', ' ')}</span></div></div>
+                <div className="flex items-end gap-4"><div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#1455d9] text-3xl font-bold text-white shadow-lg">{user.profile?.avatar ? <img src={user.profile.avatar} alt="" className="h-full w-full object-cover" /> : initials}</div><div className="sv-profile-name translate-y-3"><h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950">{user.name} {user.profile?.emojiTag ? <span title="Profile emoji tag">{user.profile.emojiTag}</span> : null}</h2><span className="mt-1 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-bold capitalize text-violet-700">{user.role.replace('_', ' ')}</span></div></div>
                 <div className="flex flex-wrap gap-2 self-start sm:self-auto">
                   <ShareProfileButton userId={user.id} name={user.name} isOwn={isOwn} />
                   {isOwn ? <Link to="/profile" className="sv-btn-primary"><i className="fas fa-pen" aria-hidden />Edit profile</Link> : null}
@@ -81,6 +87,61 @@ export function ProfilePage() {
           <ActivityPanel title="Recent enquiries" icon="fa-paper-plane" empty="Your program enquiries will appear here." actionLabel="Find a program" actionTo="/listings">
             {enquiries.map((item) => <Link key={item.id} to={item.listing?.slug ? `/listings/${item.listing.slug}` : '/student/enquiries'} className="sv-profile-activity-row"><span><strong>{item.listing?.title ?? 'Program enquiry'}</strong><small className="capitalize">{item.status}</small></span><i className="fas fa-arrow-right" aria-hidden /></Link>)}
           </ActivityPanel>
+          {/* ── Job opportunities matched by category ── */}
+          <section className="rounded-2xl border border-violet-100 bg-white p-6 shadow-[0_8px_30px_rgba(76,29,149,.08)] lg:col-span-2">
+            <h2 className="flex items-center gap-2 font-display text-lg font-bold text-slate-950">
+              <i className="fas fa-briefcase text-[#1455d9]" aria-hidden />
+              Job opportunities for you
+              {jobFeed.length > 0 && (
+                <span className="ml-1 rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-bold text-violet-700">
+                  {jobFeed.length}
+                </span>
+              )}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Based on courses and categories you've explored.
+            </p>
+            <div className="mt-4">
+              {jobFeed.length === 0 ? (
+                <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+                  No matching job posts yet. Enquire about more programs to unlock category-matched opportunities.
+                </div>
+              ) : (
+                <ul className="divide-y divide-slate-100">
+                  {jobFeed.map((job) => (
+                    <li key={job.id} className="sv-job-feed-row">
+                      <div className="sv-job-feed-icon" aria-hidden>
+                        <i className="fas fa-briefcase" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <strong className="text-sm font-semibold text-slate-900">{job.title}</strong>
+                          <span className="sv-job-feed-type">{job.jobType}</span>
+                        </div>
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {job.institutionName ?? 'Institution'}
+                          {' · '}{job.category}
+                          {' · '}{job.location}
+                          {job.salaryRange ? ` · ${job.salaryRange}` : ''}
+                        </p>
+                        <p className="mt-1.5 line-clamp-2 text-xs text-slate-600">{job.description}</p>
+                      </div>
+                      {job.applyUrl ? (
+                        <a
+                          href={job.applyUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="shrink-0 rounded-lg border border-violet-200 px-3 py-1.5 text-xs font-bold text-violet-700 transition hover:bg-violet-50"
+                        >
+                          Apply →
+                        </a>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
         </section> : null}
       </div>
     </MarketplaceShell>

@@ -320,7 +320,7 @@ export function InstitutionDashboardPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-display font-bold">{e.contactInfo.name}</p>
+                      <p className="font-display font-bold">{e.studentProfile ? <Link className="text-teal hover:underline" to={`/u/${e.studentProfile.id}`}>{e.studentProfile.name}</Link> : e.contactInfo.name} {e.studentProfile?.profile?.emojiTag ?? ''}</p>
                       <StatusBadge status={e.status} />
                       <span className="text-xs text-mute">{formatRelative(e.createdAt)}</span>
                     </div>

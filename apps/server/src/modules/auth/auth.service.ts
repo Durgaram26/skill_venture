@@ -31,6 +31,7 @@ function toAuthUser(user: UserDocument): AuthUser {
     profile: user.profile
       ? {
           avatar: user.profile.avatar ?? undefined,
+          emojiTag: user.profile.emojiTag ?? undefined,
           about: user.profile.about ?? undefined,
           city: user.profile.city ?? undefined,
           currentEducationLevel: user.profile.currentEducationLevel ?? undefined,
@@ -227,6 +228,10 @@ export async function updateProfile(userId: string, input: UpdateProfileInput) {
   if (input.about !== undefined) {
     user.profile = user.profile ?? {};
     user.profile.about = input.about.trim() || undefined;
+  }
+  if (input.emojiTag !== undefined) {
+    user.profile = user.profile ?? {};
+    user.profile.emojiTag = input.emojiTag.trim() || undefined;
   }
 
   await user.save();
