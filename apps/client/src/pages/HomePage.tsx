@@ -42,7 +42,7 @@ export function HomePage() {
   const hackathons = byType('hackathon').slice(0, 2);
 
   return (
-    <MarketplaceShell fullWidth hideFooter>
+    <MarketplaceShell fullWidth>
       <div className="sv-mock sv-home-theme bg-white">
       {/* Hero */}
       <section className="sv-home-hero">
