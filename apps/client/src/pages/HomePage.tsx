@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import type { ListingSummary } from '@skillventures/shared-types';
 import { api } from '../lib/api';
 import { MarketplaceShell } from '../components/AppShell';
-import { BrandWordmark } from '../components/BrandWordmark';
 
 /* ────────────────────────────────────────────────────────────
    SkillVentures home — reference mockup styling, real DB data.
@@ -184,39 +183,6 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-10 sm:py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            <div>
-              <div className="mb-4"><BrandWordmark compact onDark /></div>
-              <p className="text-gray-400">
-                Launch your learning journey with interactive courses, bootcamps, and hackathons.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link to="/" className="hover:text-white">Home</Link></li>
-                <li><Link to="/listings?type=course" className="hover:text-white">Courses</Link></li>
-                <li><Link to="/listings?type=bootcamp" className="hover:text-white">Bootcamps</Link></li>
-                <li><Link to="/listings?type=hackathon" className="hover:text-white">Hackathons</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><i className="fas fa-envelope mr-2" /> hello@skillventures.com</li>
-                <li><i className="fas fa-phone mr-2" /> +91 98765 43210</li>
-                <li><i className="fas fa-map-marker-alt mr-2" /> Bengaluru, India</li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2024 SkillVentures. All rights reserved. | Prices in Indian Rupees (₹)</p>
-          </div>
-        </div>
-      </footer>
       </div>
     </MarketplaceShell>
   );
