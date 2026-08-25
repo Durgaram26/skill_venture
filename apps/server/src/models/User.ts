@@ -5,6 +5,7 @@ const userProfileSchema = new Schema(
   {
     avatar: { type: String },
     emojiTag: { type: String, trim: true, maxlength: 8 },
+    profileTitle: { type: String, trim: true, maxlength: 40 },
     about: { type: String, trim: true, maxlength: 500 },
     city: { type: String },
     currentEducationLevel: { type: String },

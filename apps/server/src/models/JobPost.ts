@@ -10,8 +10,11 @@ const jobPostSchema = new Schema(
     },
     title: { type: String, required: true, trim: true, maxlength: 150 },
     description: { type: String, required: true, maxlength: 3000 },
-    /** Must match a listing category so we can route it to relevant students */
+    /** Legacy primary category; kept for existing records and API consumers. */
     category: { type: String, required: true, index: true },
+    /** Categories from the institution's listings that this job is relevant to. */
+    categories: { type: [String], default: [], index: true },
+    keywords: { type: [String], default: [] },
     location: { type: String, default: 'Remote' },
     jobType: {
       type: String,
@@ -33,6 +36,7 @@ const jobPostSchema = new Schema(
 
 jobPostSchema.index({ institutionId: 1, status: 1 });
 jobPostSchema.index({ category: 1, status: 1, createdAt: -1 });
+jobPostSchema.index({ categories: 1, status: 1, createdAt: -1 });
 
 export type JobPostDocument = InferSchemaType<typeof jobPostSchema> & {
   _id: mongoose.Types.ObjectId;

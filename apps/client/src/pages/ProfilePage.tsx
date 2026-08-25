@@ -49,19 +49,33 @@ export function ProfilePage() {
   return (
     <MarketplaceShell fullWidth>
       <div className="sv-public-profile bg-slate-50">
-        <section className="sv-profile-hero overflow-hidden">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-8 px-5 py-10 md:px-10 md:py-14">
-            <div className="relative z-10"><p className="text-xs font-bold uppercase tracking-[.16em] text-violet-700">Learner profile</p><h1 className="mt-3 font-display text-4xl font-extrabold tracking-tight text-slate-950 md:text-5xl">{isOwn ? 'Your learning identity' : user.name}</h1><p className="mt-4 max-w-lg text-base leading-7 text-slate-600">A simple profile institutions can understand at a glance.</p></div>
-            <div className="sv-profile-hero-art hidden h-36 w-[38%] md:block" aria-hidden><div className="sv-profile-art-card"><i className="fas fa-user-graduate text-5xl" /></div><div className="sv-profile-art-pencil">✎</div><div className="sv-profile-art-dots" /></div>
+        <section className="sv-profile-welcome overflow-hidden">
+          <div className="mx-auto flex h-24 max-w-6xl items-center justify-between px-5 md:h-28 md:px-10">
+            <div className="flex items-center gap-5">
+              <div className="sv-profile-welcome-copy">
+                <p>YOUR JOURNEY</p>
+                <strong>Learn. Build. Grow.</strong>
+                <span>Keep your goals and next steps in one place.</span>
+              </div>
+              <div className="sv-profile-welcome-left" aria-hidden>
+                <span><i className="fas fa-code" /></span>
+                <span><i className="fas fa-briefcase" /></span>
+                <span><i className="fas fa-lightbulb" /></span>
+              </div>
+            </div>
+            <div className="sv-profile-welcome-art" aria-hidden>
+              <span><i className="fas fa-sparkles" /></span>
+              <i className="fas fa-user-graduate" />
+              <i className="sv-welcome-float sv-welcome-float--rocket fas fa-rocket" />
+            </div>
           </div>
         </section>
-
-        <main className={`mx-auto grid max-w-6xl items-start gap-6 px-5 py-7 md:px-10 md:py-9 ${isOwn ? 'lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,.75fr)]' : ''}`}>
+        <main className="mx-auto max-w-6xl px-5 py-7 md:px-10 md:py-9">
           <article className="overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-[0_8px_30px_rgba(76,29,149,.08)]">
             <div className="h-24 bg-gradient-to-r from-[#102d80] via-[#1455d9] to-[#6d28d9] md:h-32" />
             <div className="px-5 pb-7 md:px-8">
               <div className="-mt-14 flex flex-col gap-5 sm:-mt-16 sm:flex-row sm:items-end sm:justify-between">
-                <div className="flex items-end gap-4"><div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#1455d9] text-3xl font-bold text-white shadow-lg">{user.profile?.avatar ? <img src={user.profile.avatar} alt="" className="h-full w-full object-cover" /> : initials}</div><div className="sv-profile-name translate-y-3"><h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950">{user.name} {user.profile?.emojiTag ? <span title="Profile emoji tag">{user.profile.emojiTag}</span> : null}</h2><span className="mt-1 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-bold capitalize text-violet-700">{user.role.replace('_', ' ')}</span></div></div>
+                <div className="flex items-end gap-4"><div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#1455d9] text-3xl font-bold text-white shadow-lg">{user.profile?.avatar ? <img src={user.profile.avatar} alt="" className="h-full w-full object-cover" /> : initials}</div><div className="sv-profile-name translate-y-3"><h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950">{user.name} {user.profile?.emojiTag ? <span title="Profile emoji tag">{user.profile.emojiTag}</span> : null}</h2><span className="mt-1 inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-700">{user.profile?.profileTitle || 'Student'} {isOwn ? <Link to="/profile" aria-label="Edit profile badge" title="Edit profile badge" className="ml-1 text-violet-500 hover:text-violet-800"><i className="fas fa-pen text-[10px]" aria-hidden /></Link> : null}</span></div></div>
                 <div className="flex flex-wrap gap-2 self-start sm:self-auto">
                   <ShareProfileButton userId={user.id} name={user.name} isOwn={isOwn} />
                   {isOwn ? <Link to="/profile" className="sv-btn-primary"><i className="fas fa-pen" aria-hidden />Edit profile</Link> : null}
@@ -74,7 +88,7 @@ export function ProfilePage() {
             </div>
           </article>
 
-          {isOwn ? <aside className="space-y-5">
+          {isOwn ? <aside className="mt-6 grid gap-5 lg:grid-cols-3">
             <section className="rounded-2xl border border-violet-100 bg-white p-6 shadow-[0_8px_30px_rgba(76,29,149,.08)]"><div className="flex items-center justify-between"><h3 className="font-bold text-slate-950">Profile strength</h3><span className="font-bold text-violet-700">{completion}%</span></div><div className="sv-profile-progress mt-3"><span style={{ width: `${completion}%` }} /></div><p className="mt-3 text-sm leading-6 text-slate-500">Complete your profile to make a stronger first impression.</p><Link to="/profile" className="mt-4 inline-flex text-sm font-bold text-violet-700 hover:underline">Complete profile <i className="fas fa-arrow-right ml-2" aria-hidden /></Link></section>
             <section className="rounded-2xl border border-violet-100 bg-white p-6 shadow-[0_8px_30px_rgba(76,29,149,.08)]"><h3 className="font-bold text-slate-950">Your activity</h3><div className="mt-5 grid grid-cols-3 gap-2 text-center"><MiniStat value={String(savedPrograms.length)} label="Saved" icon="fa-bookmark" /><MiniStat value={String(enquiries.length)} label="Enquiries" icon="fa-paper-plane" /><MiniStat value="0" label="Badges" icon="fa-award" /></div></section>
             <section className="rounded-2xl border border-violet-100 bg-white p-6 shadow-[0_8px_30px_rgba(76,29,149,.08)]"><h3 className="font-bold text-slate-950"><i className="fas fa-shield-halved mr-2 text-emerald-500" aria-hidden />Your information is secure</h3><p className="mt-2 text-sm leading-6 text-slate-500">Your contact details are only used for institution follow-ups.</p></section>

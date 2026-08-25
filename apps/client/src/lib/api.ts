@@ -80,7 +80,7 @@ export const api = {
   publicProfile(id: string) {
     return request<{ user: PublicProfile }>(`/api/v1/auth/users/${id}`);
   },
-  updateProfile(payload: { name?: string; email?: string; phone?: string; about?: string; emojiTag?: string }) {
+  updateProfile(payload: { name?: string; email?: string; phone?: string; about?: string; emojiTag?: string; profileTitle?: string }) {
     return request<{ user: AuthPayload['user'] }>('/api/v1/auth/me', {
       method: 'PATCH',
       body: JSON.stringify(payload),
@@ -640,6 +640,8 @@ export type JobSummary = {
   title: string;
   description: string;
   category: string;
+  categories: string[];
+  keywords: string[];
   location: string;
   jobType: 'full-time' | 'part-time' | 'internship' | 'contract' | 'freelance';
   salaryRange?: string;
@@ -652,7 +654,9 @@ export type JobSummary = {
 export type JobCreatePayload = {
   title: string;
   description: string;
-  category: string;
+  category?: string;
+  categories: string[];
+  keywords: string[];
   location?: string;
   jobType?: JobSummary['jobType'];
   salaryRange?: string;

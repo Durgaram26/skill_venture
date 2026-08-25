@@ -31,6 +31,7 @@ import { InstitutionAnalyticsPage } from './pages/InstitutionAnalyticsPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { InstitutionJobsPage } from './pages/InstitutionJobsPage';
+import { StudentJobsPage } from './pages/StudentJobsPage';
 // Student payments are temporarily disabled; keep the page for a future payments release.
 // import { StudentPaymentsPage } from './pages/StudentPaymentsPage';
 
@@ -85,6 +86,7 @@ export function App() {
       <Route path="/institution/analytics" element={<InstitutionAnalyticsPage />} />
       <Route path="/institution/jobs" element={<InstitutionJobsPage />} />
       <Route path="/student/enquiries" element={<StudentEnquiriesPage />} />
+      <Route path="/student/jobs" element={<StudentJobsPage />} />
       <Route path="/student/bookmarks" element={<BookmarksPage />} />
       {/* Student payments are temporarily disabled; restore this route when payments launch. */}
       {/* <Route path="/student/payments" element={<StudentPaymentsPage />} /> */}

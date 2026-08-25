@@ -185,6 +185,10 @@ export function MarketplaceShell({
                     <IconBook />
                     My learning
                   </NavLink>
+                  <NavLink to="/student/jobs" className={navClass}>
+                    <i className="fas fa-briefcase" aria-hidden />
+                    My jobs
+                  </NavLink>
                   {/* Student payments are temporarily disabled; keep this route for future use. */}
                   <NavLink to="/student/bookmarks" className={navClass}>
                     <IconBookmark />
@@ -303,6 +307,9 @@ export function MarketplaceShell({
                 <div className="sv-mm-list">
                   <NavLink to="/student/enquiries" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
                     <IconBook className="sv-mm-row-icon" /><span>My Learning</span><IconChevron className="sv-mm-chevron" />
+                  </NavLink>
+                  <NavLink to="/student/jobs" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
+                    <i className="fas fa-briefcase sv-mm-row-icon" /><span>My Jobs</span><IconChevron className="sv-mm-chevron" />
                   </NavLink>
                   <NavLink to="/student/bookmarks" className="sv-mm-row" onClick={() => setMenuOpen(false)}>
                     <IconBookmark className="sv-mm-row-icon" /><span>Saved</span><IconChevron className="sv-mm-chevron" />

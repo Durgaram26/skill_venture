@@ -50,6 +50,7 @@ export interface AuthUser {
   profile?: {
     avatar?: string;
     emojiTag?: string;
+    profileTitle?: string;
     about?: string;
     city?: string;
     currentEducationLevel?: string;

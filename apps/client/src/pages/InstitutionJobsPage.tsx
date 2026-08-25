@@ -12,7 +12,7 @@ const JOB_TYPE_LABELS: Record<string, string> = {
 };
 
 const JOB_CATEGORY_HINT =
-  'Use the same category as your listings so students who enquired about that category see this job.';
+  'Select every listing category this job belongs to. Students who engaged with any selected category can see it.';
 
 function JobStatusPill({ status }: { status: string }) {
   return (
@@ -27,7 +27,8 @@ function JobStatusPill({ status }: { status: string }) {
 const EMPTY_FORM: JobCreatePayload = {
   title: '',
   description: '',
-  category: '',
+  categories: [],
+  keywords: [],
   location: 'Remote',
   jobType: 'full-time',
   salaryRange: '',
@@ -46,12 +47,17 @@ export function InstitutionJobsPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [listingCategories, setListingCategories] = useState<string[]>([]);
+  const [customCategory, setCustomCategory] = useState('');
+  const [keywordInput, setKeywordInput] = useState('');
 
   useEffect(() => {
     if (user?.role !== 'institution') return;
-    void api
-      .myJobs()
-      .then((data) => setJobs(data.items))
+    void Promise.all([api.myJobs(), api.myListings()])
+      .then(([jobData, listingData]) => {
+        setJobs(jobData.items);
+        setListingCategories([...new Set(listingData.items.map((listing) => listing.category).filter(Boolean))]);
+      })
       .catch((err: unknown) =>
         setError(err instanceof ApiError ? err.message : 'Failed to load jobs'),
       )
@@ -61,6 +67,8 @@ export function InstitutionJobsPage() {
   function openCreate() {
     setEditId(null);
     setForm(EMPTY_FORM);
+    setCustomCategory('');
+    setKeywordInput('');
     setSaveError(null);
     setShowForm(true);
   }
@@ -70,13 +78,16 @@ export function InstitutionJobsPage() {
     setForm({
       title: job.title,
       description: job.description,
-      category: job.category,
+      categories: job.categories?.length ? job.categories : [job.category],
+      keywords: job.keywords ?? [],
       location: job.location,
       jobType: job.jobType,
       salaryRange: job.salaryRange ?? '',
       applyUrl: job.applyUrl ?? '',
       expiresAt: job.expiresAt ? job.expiresAt.slice(0, 10) : '',
     });
+    setCustomCategory('');
+    setKeywordInput((job.keywords ?? []).join(', '));
     setSaveError(null);
     setShowForm(true);
   }
@@ -86,8 +97,13 @@ export function InstitutionJobsPage() {
     setSaving(true);
     setSaveError(null);
     try {
+      const categories = [...new Set([...form.categories, ...customCategory.split(',').map((v) => v.trim()).filter(Boolean)])];
+      const keywords = [...new Set([...form.keywords, ...keywordInput.split(',').map((v) => v.trim()).filter(Boolean)])];
       const payload = {
         ...form,
+        categories,
+        category: categories[0],
+        keywords,
         salaryRange: form.salaryRange || undefined,
         applyUrl: form.applyUrl || undefined,
         expiresAt: form.expiresAt || undefined,
@@ -181,16 +197,38 @@ export function InstitutionJobsPage() {
                 />
               </label>
 
-              <label className="sv-job-label">
-                Category *
+              <div className="sv-job-label">
+                Listing categories *
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {listingCategories.map((category) => (
+                    <label key={category} className="flex cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm font-semibold">
+                      <input
+                        type="checkbox"
+                        checked={form.categories.includes(category)}
+                        onChange={(e) => setForm({ ...form, categories: e.target.checked ? [...form.categories, category] : form.categories.filter((item) => item !== category) })}
+                      />
+                      {category}
+                    </label>
+                  ))}
+                </div>
                 <input
-                  className="sv-input mt-1"
-                  value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  required
-                  placeholder="e.g. Web Development"
+                  className="sv-input mt-2"
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  placeholder="Add another category, e.g. Java (comma separated)"
                 />
                 <span className="mt-1 block text-xs text-mute">{JOB_CATEGORY_HINT}</span>
+              </div>
+
+              <label className="sv-job-label">
+                Keywords
+                <input
+                  className="sv-input mt-1"
+                  value={keywordInput}
+                  onChange={(e) => { setKeywordInput(e.target.value); setForm({ ...form, keywords: e.target.value.split(',').map((v) => v.trim()).filter(Boolean) }); }}
+                  placeholder="e.g. Java, React, backend, internship"
+                />
+                <span className="mt-1 block text-xs text-mute">Add comma-separated skills so relevant jobs are easier to match.</span>
               </label>
 
               <div className="grid gap-4 sm:grid-cols-2">
@@ -278,7 +316,7 @@ export function InstitutionJobsPage() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="sv-btn-primary" disabled={saving}>
+                <button type="submit" className="sv-btn-primary" disabled={saving || (form.categories.length === 0 && !customCategory.trim())}>
                   {saving ? 'Saving…' : editId ? 'Update job' : 'Post job'}
                 </button>
               </div>
@@ -324,7 +362,7 @@ export function InstitutionJobsPage() {
                   </div>
                   <p className="mt-1 text-xs text-mute">
                     <i className="fas fa-tag mr-1" aria-hidden />
-                    {job.category}
+                    {(job.categories?.length ? job.categories : [job.category]).join(' · ')}
                     {' · '}
                     <i className="fas fa-location-dot mr-1" aria-hidden />
                     {job.location}
@@ -333,6 +371,7 @@ export function InstitutionJobsPage() {
                       ? ` · Expires ${new Date(job.expiresAt).toLocaleDateString()}`
                       : ''}
                   </p>
+                  {job.keywords?.length ? <div className="mt-2 flex flex-wrap gap-1.5">{job.keywords.map((keyword) => <span key={keyword} className="sv-job-type-chip">#{keyword}</span>)}</div> : null}
                   <p className="mt-2 line-clamp-2 text-sm text-ink/75">{job.description}</p>
                 </div>
               </div>

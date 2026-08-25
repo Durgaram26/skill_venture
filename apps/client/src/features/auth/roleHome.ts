@@ -8,6 +8,6 @@ export function getRoleHomePath(role: UserRole): string {
     case 'super_admin':
       return '/admin';
     default:
-      return '/student/enquiries';
+      return '/student/jobs';
   }
 }
